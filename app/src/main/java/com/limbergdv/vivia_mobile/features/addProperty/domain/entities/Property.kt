@@ -1,5 +1,9 @@
 package com.limbergdv.vivia_mobile.features.addProperty.domain.entities
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
 data class Property(
     val id: Int = 0,
     val listingType: ListingType,           // VENTA o RENTA
@@ -15,7 +19,7 @@ data class Property(
     val title: String,
     val description: String,
     val imageUris: List<String> = emptyList()
-)
+) : Parcelable
 
 enum class ListingType {
     VENTA, RENTA
