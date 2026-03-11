@@ -53,4 +53,17 @@ class LesseeRepositoryImpl @Inject constructor(
             Result.failure(e)
         }
     }
+
+    override suspend fun updateFcmToken(token: String): Result<String> {
+        return try {
+            val response = api.updateFcmToken(token)
+            if (response.success) {
+                Result.success(response.data ?: "Token FCM actualizado correctamente")
+            } else {
+                Result.failure(Exception(response.message ?: "Error al actualizar token FCM"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }

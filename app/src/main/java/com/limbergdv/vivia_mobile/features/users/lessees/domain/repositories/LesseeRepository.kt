@@ -14,5 +14,5 @@ interface LesseeRepository {
         credentialResponseJson: String
     ): Result<Lessee>
 
-
+    suspend fun updateFcmToken(token: String): Result<String>
 }

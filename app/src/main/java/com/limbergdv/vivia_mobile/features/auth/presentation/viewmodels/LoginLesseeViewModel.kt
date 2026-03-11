@@ -2,8 +2,10 @@ package com.limbergdv.vivia_mobile.features.auth.presentation.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.messaging.FirebaseMessaging
 import com.limbergdv.vivia_mobile.features.auth.domain.usecases.GetAuthChallengeUseCase
 import com.limbergdv.vivia_mobile.features.auth.domain.usecases.VerifyAuthVerifyUseCase
+import com.limbergdv.vivia_mobile.features.users.lessees.domain.usecases.UpdateFcmTokenUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,7 +17,8 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginLesseeViewModel @Inject constructor(
     private val getChallengeUseCase: GetAuthChallengeUseCase,
-    private val verifyUseCase: VerifyAuthVerifyUseCase
+    private val verifyUseCase: VerifyAuthVerifyUseCase,
+    private val updateFcmTokenUseCase: UpdateFcmTokenUseCase,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(LoginLesseeState())
@@ -61,6 +64,8 @@ class LoginLesseeViewModel @Inject constructor(
             result.fold(
                 onSuccess = {
                     _state.update { it.copy(isLoading = false, isLoginSuccessful = true) }
+                    // Disparamos la sincronización del token justo al tener éxito
+                    syncFirebaseToken()
                 },
                 onFailure = { exception ->
                     _state.update { it.copy(isLoading = false, error = exception.message ?: "Error al iniciar sesión") }
@@ -68,4 +73,18 @@ class LoginLesseeViewModel @Inject constructor(
             )
         }
     }
+
+    private fun syncFirebaseToken() {
+        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                return@addOnCompleteListener // Manejar error si es necesario
+            }
+
+            val token = task.result
+            viewModelScope.launch {
+                updateFcmTokenUseCase(token)
+            }
+        }
+    }
+
 }

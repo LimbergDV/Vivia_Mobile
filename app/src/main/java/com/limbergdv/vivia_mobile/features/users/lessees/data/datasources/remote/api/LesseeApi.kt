@@ -6,6 +6,8 @@ import com.limbergdv.vivia_mobile.features.users.lessees.data.datasources.remote
 import com.limbergdv.vivia_mobile.features.users.lessees.data.datasources.remote.dtos.LesseeRegisterVerifyResponseDto
 import retrofit2.http.Body
 import retrofit2.http.POST
+import retrofit2.http.PUT
+import retrofit2.http.Query
 
 interface LesseeApi {
     @POST("lessees/register/challenge")
@@ -13,4 +15,7 @@ interface LesseeApi {
 
     @POST("lessees/register/verify")
     suspend fun lesseeRegisterVerify(@Body request: LesseeRegisterVerifyRequestDto): BaseResponse<LesseeRegisterVerifyResponseDto>
+
+    @PUT("lessees/me/fcm-token")
+    suspend fun updateFcmToken(@Query("token") token: String): BaseResponse<String>
 }
