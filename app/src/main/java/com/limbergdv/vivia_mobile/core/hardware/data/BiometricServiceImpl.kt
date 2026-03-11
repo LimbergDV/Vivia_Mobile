@@ -1,6 +1,7 @@
 package com.limbergdv.vivia_mobile.core.hardware.data
 
 import android.content.Context
+import android.util.Log
 import androidx.credentials.CreatePublicKeyCredentialRequest
 import androidx.credentials.CreatePublicKeyCredentialResponse
 import androidx.credentials.CredentialManager
@@ -19,7 +20,7 @@ class BiometricServiceImpl @Inject constructor(
 
     override suspend fun registerBiometric(context: Context, challengeJson: String): Result<String> {
         return try {
-            val rootObject = JSONObject(challengeJson)
+            val rootObject = org.json.JSONObject(challengeJson)
 
             // 1. Extraemos el objeto interior si viene envuelto en "publicKey"
             val optionsObject = if (rootObject.has("publicKey")) {
@@ -28,15 +29,15 @@ class BiometricServiceImpl @Inject constructor(
                 rootObject
             }
 
-            // 2. Verificamos que el bloque user tenga el atributo "name"
+            // 2. Parche de Dominio (rpId)
             if (optionsObject.has("rp")) {
                 val rpObject = optionsObject.getJSONObject("rp")
                 if (rpObject.optString("id") == "localhost" || rpObject.optString("id").isEmpty()) {
-                    // Cambia esto por el dominio real donde estará alojado tu backend
                     rpObject.put("id", "vivia.aleosh.online")
                 }
             }
 
+            // 3. Parche de Usuario (name)
             if (optionsObject.has("user")) {
                 val userObject = optionsObject.getJSONObject("user")
                 if (!userObject.has("name")) {
@@ -44,10 +45,20 @@ class BiometricServiceImpl @Inject constructor(
                 }
             }
 
-            // 3. Convertimos el objeto desenvuelto y corregido a String
-            val fixedChallengeJson = optionsObject.toString()
+            // --- NUEVO PARCHE: Forzar creación de Passkey ---
+            // Le decimos a Android que ES OBLIGATORIO guardar la huella en el dispositivo (Resident Key)
+            val authSelection = optionsObject.optJSONObject("authenticatorSelection") ?: org.json.JSONObject()
+            authSelection.put("residentKey", "required")
+            authSelection.put("requireResidentKey", true)
+            authSelection.put("authenticatorAttachment", "platform") // Exige que sea la huella/rostro del celular
+            optionsObject.put("authenticatorSelection", authSelection)
+            // ------------------------------------------------
 
-            // 4. Pasamos el JSON limpio a Android
+            // 4. Convertimos a String
+            val fixedChallengeJson = optionsObject.toString()
+            Log.d("VIVIA_AUTH_DEBUG", "JSON de Registro enviado a Android: $fixedChallengeJson")
+
+            // 5. Invocamos el lector de Android
             val request = CreatePublicKeyCredentialRequest(requestJson = fixedChallengeJson)
             val response = credentialManager.createCredential(context, request)
 
@@ -65,7 +76,29 @@ class BiometricServiceImpl @Inject constructor(
 
     override suspend fun authenticateBiometric(context: Context, challengeJson: String): Result<String> {
         return try {
-            val option = GetPublicKeyCredentialOption(requestJson = challengeJson)
+            val rootObject = org.json.JSONObject(challengeJson)
+
+            // 1. Extraemos el objeto interior
+            val optionsObject = if (rootObject.has("publicKey")) {
+                rootObject.getJSONObject("publicKey")
+            } else {
+                rootObject
+            }
+
+            // 2. PARCHE PARA LOGIN: Inyectamos a la fuerza el rpId.
+            // Como el backend solo manda el 'challenge', Android necesita
+            // obligatoriamente el rpId para buscar la huella en su bóveda.
+            optionsObject.put("rpId", "vivia.aleosh.online")
+
+            // 3. Convertimos a texto
+            val fixedChallengeJson = optionsObject.toString()
+
+            // ---- AGREGA ESTA LÍNEA ----
+            Log.d("VIVIA_AUTH_DEBUG", "JSON de Login enviado a Android: $fixedChallengeJson")
+            // ---------------------------
+
+            // 4. Invocamos el lector de Android
+            val option = GetPublicKeyCredentialOption(requestJson = fixedChallengeJson)
             val request = GetCredentialRequest(listOf(option))
 
             val response = credentialManager.getCredential(context, request)

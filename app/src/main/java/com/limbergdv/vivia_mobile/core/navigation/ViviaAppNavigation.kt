@@ -52,7 +52,7 @@ fun ViviaAppNavigation(appNavigator: AppNavigatorImpl) {
                 },
                 onNavigateNext = {
                     // Cuando el registro sea exitoso, navegamos al home
-                    appNavigator.navigate(AppRoutes.HOME) {
+                    appNavigator.navigate(AppRoutes.LOGIN_LESSOR) {
                         // Evita que el usuario regrese al registro presionando "Atrás"
                         popUpTo(AppRoutes.REGISTER_LESSOR) { inclusive = true }
                     }
@@ -70,7 +70,7 @@ fun ViviaAppNavigation(appNavigator: AppNavigatorImpl) {
                                 },
                 onNavigateNext = {
                     // Cuando el registro sea exitoso, navegamos al home
-                    appNavigator.navigate(AppRoutes.HOME) {
+                    appNavigator.navigate(AppRoutes.LOGIN_LESSEE) {
                         // Evita que el usuario regrese al registro presionando "Atrás"
                         popUpTo(AppRoutes.REGISTER_LESSOR) { inclusive = true }
                     }
@@ -81,7 +81,6 @@ fun ViviaAppNavigation(appNavigator: AppNavigatorImpl) {
         composable(AppRoutes.LOGIN_LESSOR) {
             LoginLessorScreen(
                 onNavigateToRegister = { appNavigator.navigate(AppRoutes.REGISTER_LESSOR) },
-                onFingerprintClick = {},
                 onNavigateNext = {}
             )
         }
@@ -89,7 +88,6 @@ fun ViviaAppNavigation(appNavigator: AppNavigatorImpl) {
         composable(AppRoutes.LOGIN_LESSEE) {
             LoginLesseeScreen(
                 onNavigateToRegister = { appNavigator.navigate(AppRoutes.REGISTER_LESSEE) },
-                onFingerprintClick = {},
                 onNavigateNext = {}
             )
         }
