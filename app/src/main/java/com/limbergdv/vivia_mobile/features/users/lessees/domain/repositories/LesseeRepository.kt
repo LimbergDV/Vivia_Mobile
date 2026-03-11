@@ -15,4 +15,6 @@ interface LesseeRepository {
     ): Result<Lessee>
 
     suspend fun updateFcmToken(token: String): Result<String>
+
+    suspend fun followLessor(companyName: String): Result<String>
 }

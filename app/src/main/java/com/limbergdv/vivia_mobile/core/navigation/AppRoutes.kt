@@ -8,4 +8,5 @@ object AppRoutes {
 
     const val LOGIN_LESSEE = "login_lessee"
     const val LOGIN_LESSOR = "login_lessor"
+    const val FOLLOWS_LIST = "follows_list"
 }

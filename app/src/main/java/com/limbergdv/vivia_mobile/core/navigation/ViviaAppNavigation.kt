@@ -7,6 +7,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.limbergdv.vivia_mobile.features.auth.presentation.screens.LoginLesseeScreen
 import com.limbergdv.vivia_mobile.features.auth.presentation.screens.LoginLessorScreen
+import com.limbergdv.vivia_mobile.features.follows.presentation.screens.FollowsScreen
 import com.limbergdv.vivia_mobile.features.home.presentation.screens.HomeScreen
 import com.limbergdv.vivia_mobile.features.home.presentation.screens.LessorOptionScreen
 import com.limbergdv.vivia_mobile.features.users.lessees.presentation.screens.RegisterLesseeScreen
@@ -88,8 +89,18 @@ fun ViviaAppNavigation(appNavigator: AppNavigatorImpl) {
         composable(AppRoutes.LOGIN_LESSEE) {
             LoginLesseeScreen(
                 onNavigateToRegister = { appNavigator.navigate(AppRoutes.REGISTER_LESSEE) },
-                onNavigateNext = {}
+                onNavigateNext = {
+                    // Cambiamos HOME por FOLLOWS_LIST y limpiamos la pila
+                    appNavigator.navigate(AppRoutes.FOLLOWS_LIST) {
+                        popUpTo(0) { inclusive = true }
+                        launchSingleTop = true
+                    }
+                }
             )
+        }
+
+        composable(AppRoutes.FOLLOWS_LIST) {
+            FollowsScreen()
         }
 
     }

@@ -66,4 +66,17 @@ class LesseeRepositoryImpl @Inject constructor(
             Result.failure(e)
         }
     }
+
+    override suspend fun followLessor(companyName: String): Result<String> {
+        return try {
+            val response = api.followLessor(companyName)
+            if (response.success) {
+                Result.success(response.data ?: "Arrendador seguido con éxito")
+            } else {
+                Result.failure(Exception(response.message ?: "Error al seguir al arrendador"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }

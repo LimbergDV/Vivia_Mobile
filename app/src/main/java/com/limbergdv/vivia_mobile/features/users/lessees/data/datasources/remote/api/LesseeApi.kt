@@ -7,6 +7,7 @@ import com.limbergdv.vivia_mobile.features.users.lessees.data.datasources.remote
 import retrofit2.http.Body
 import retrofit2.http.POST
 import retrofit2.http.PUT
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface LesseeApi {
@@ -18,4 +19,7 @@ interface LesseeApi {
 
     @PUT("lessees/me/fcm-token")
     suspend fun updateFcmToken(@Query("token") token: String): BaseResponse<String>
+
+    @POST("lessees/me/follow/{companyName}")
+    suspend fun followLessor(@Path("companyName") companyName: String): BaseResponse<String>
 }

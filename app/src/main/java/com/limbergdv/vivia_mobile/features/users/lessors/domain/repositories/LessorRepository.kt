@@ -16,4 +16,6 @@ interface LessorRepository {
         companyName: String,
         credentialResponseJson: String
     ): Result<Lessor>
+
+    suspend fun getAllLessors(): Result<List<Lessor>>
 }

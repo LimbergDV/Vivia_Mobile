@@ -66,4 +66,17 @@ class LessorRepositoryImpl @Inject constructor(
             Result.failure(e)
         }
     }
+
+    override suspend fun getAllLessors(): Result<List<Lessor>> {
+        return try {
+            val response = api.getAllLessors()
+            if (response.success && response.data != null) {
+                Result.success(response.data.map { it.toDomain() })
+            } else {
+                Result.failure(Exception(response.message ?: "Error al obtener la lista de arrendadores"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }

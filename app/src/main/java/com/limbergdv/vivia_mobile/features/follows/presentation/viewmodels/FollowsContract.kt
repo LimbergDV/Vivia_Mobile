@@ -1,0 +1,18 @@
+package com.limbergdv.vivia_mobile.features.follows.presentation.viewmodels
+
+import com.limbergdv.vivia_mobile.features.users.lessors.domain.entities.Lessor
+
+// Estado de la pantalla
+data class FollowsState(
+    val isLoading: Boolean = false,
+    val lessors: List<Lessor> = emptyList(),
+    val followedCompanies: Set<String> = emptySet(), // Para cambiar el botón a "Siguiendo"
+    val error: String? = null
+)
+
+// Acciones del usuario
+sealed class FollowsEvent {
+    object LoadLessors : FollowsEvent()
+    data class OnFollowClicked(val companyName: String) : FollowsEvent()
+    object ConsumeError : FollowsEvent()
+}

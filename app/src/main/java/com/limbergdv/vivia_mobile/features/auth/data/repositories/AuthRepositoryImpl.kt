@@ -1,5 +1,6 @@
 package com.limbergdv.vivia_mobile.features.auth.data.repositories
 
+import android.util.Log
 import com.limbergdv.vivia_mobile.core.session.TokenDataStore
 import com.limbergdv.vivia_mobile.features.auth.data.datasources.remote.api.AuthApi
 import com.limbergdv.vivia_mobile.features.auth.data.datasources.remote.dtos.AuthVerifyRequestDto
@@ -46,6 +47,11 @@ class AuthRepositoryImpl @Inject constructor(
                 val authToken = response.data.toDomain()
 
                 tokenDataStore.saveToken(authToken.token)
+
+                // 2. Imprimimos el token en el Logcat con una etiqueta fácil de buscar
+                Log.d("VIVIA_TOKEN_DEBUG", "========================================")
+                Log.d("VIVIA_TOKEN_DEBUG", "🔑 TOKEN JWT: ${authToken.token}")
+                Log.d("VIVIA_TOKEN_DEBUG", "========================================")
 
                 Result.success(authToken)
             } else {
