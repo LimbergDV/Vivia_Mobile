@@ -154,7 +154,7 @@ fun RegisterLessorScreen(
                 contentAlignment = Alignment.Center
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.ic_launcher_background), // Tu icono de huella
+                    painter = painterResource(id = R.drawable.ic_huella_image), // Tu icono de huella
                     contentDescription = "Sensor de huella dactilar",
                     modifier = Modifier.fillMaxSize()
                 )
