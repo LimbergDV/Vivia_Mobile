@@ -101,11 +101,13 @@ fun AddPropertyScreen(
                     onBack                = viewModel::onBack
                 )
                 3 -> AddPropertyStep3Screen(
-                    uiState          = uiState,
-                    onImagesSelected = viewModel::onImagesSelected,
-                    onRemoveImage    = viewModel::onRemoveImage,
-                    onSubmit         = viewModel::onSubmit,
-                    onBack           = viewModel::onBack
+                    uiState            = uiState,
+                    onImagesSelected   = viewModel::onImagesSelected,
+                    onRemoveImage      = viewModel::onRemoveImage,
+                    onSubmit           = viewModel::onSubmit,
+                    onBack             = viewModel::onBack,
+                    onPrepareCameraUri = { viewModel.prepareCameraUri() },
+                    onPhotoCaptured    = viewModel::onPhotoCaptured
                 )
             }
         }

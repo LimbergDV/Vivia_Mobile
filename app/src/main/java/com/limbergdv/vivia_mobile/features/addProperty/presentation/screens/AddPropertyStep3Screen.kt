@@ -21,14 +21,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.limbergdv.vivia_mobile.features.addProperty.presentation.components.ViviaButton
 import com.limbergdv.vivia_mobile.features.addProperty.presentation.components.ViviaPink
-
+import com.limbergdv.vivia_mobile.features.addProperty.presentation.components.ViviaButton
 
 @Composable
 fun AddPropertyStep3Screen(
@@ -36,20 +34,30 @@ fun AddPropertyStep3Screen(
     onImagesSelected: (List<Uri>) -> Unit,
     onRemoveImage: (Uri) -> Unit,
     onSubmit: () -> Unit,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onPrepareCameraUri: () -> Uri?,
+    onPhotoCaptured: (Boolean) -> Unit
 ) {
-    // Launcher para seleccionar múltiples imágenes de la galería
     val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetMultipleContents()
     ) { uris -> if (uris.isNotEmpty()) onImagesSelected(uris) }
 
-    // Launcher para tomar foto con la cámara
-    var cameraUri by remember { mutableStateOf<Uri?>(null) }
+
     val cameraLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture()
     ) { success ->
-        if (success) {
-            cameraUri?.let { onImagesSelected(listOf(it)) }
+        onPhotoCaptured(success)
+    }
+
+    // Primero pedimos permiso; si se concede, lanzamos la cámara inmediatamente
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            val photoUri = onPrepareCameraUri()
+            if (photoUri != null) {
+                cameraLauncher.launch(photoUri)
+            }
         }
     }
 
@@ -59,7 +67,6 @@ fun AddPropertyStep3Screen(
             .padding(horizontal = 20.dp, vertical = 24.dp),
         verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
-        // ── Zona de drop / explorar ──────────────────────────────────────────
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -93,7 +100,7 @@ fun AddPropertyStep3Screen(
             }
         }
 
-        // ── Preview de imágenes seleccionadas ────────────────────────────────
+        // Preview de imágenes seleccionadas
         if (uiState.selectedImages.isNotEmpty()) {
             LazyRow(
                 horizontalArrangement = Arrangement.spacedBy(10.dp)
@@ -110,19 +117,14 @@ fun AddPropertyStep3Screen(
 
         Spacer(modifier = Modifier.weight(1f))
 
-        // ── Botón Tomar Foto ─────────────────────────────────────────────────
         ViviaButton(
             text = "📷  Tomar Foto",
             onClick = {
-                // TODO: Crear URI temporal con FileProvider y lanzar cámara
-                // val photoUri = createImageUri(context)
-                // cameraUri = photoUri
-                // cameraLauncher.launch(photoUri)
+                permissionLauncher.launch(android.Manifest.permission.CAMERA)
             },
             backgroundColor = ViviaPink
         )
 
-        // ── Botón Agregar Propiedad ──────────────────────────────────────────
         ViviaButton(
             text = "Agregar Propiedad",
             onClick = onSubmit,
@@ -165,7 +167,6 @@ private fun ImagePreviewItem(
             }
         }
 
-        // Botón eliminar
         Box(
             modifier = Modifier
                 .align(Alignment.TopEnd)

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Este archivo define las rutas que FileProvider puede compartir con otras apps
+    (en este caso, la app de cámara del sistema).
+
+    Debe estar en: app/src/main/res/xml/file_paths.xml
+-->
+<paths xmlns:android="http://schemas.android.com/apk/res/android">
+    <!--
+        cache-path: permite compartir archivos desde context.cacheDir
+        Es donde AndroidCameraManager.createPhotoUri() guarda la foto temporal
+    -->
+    <cache-path
+        name="vivia_camera_photos"
+        path="." />
+</paths>

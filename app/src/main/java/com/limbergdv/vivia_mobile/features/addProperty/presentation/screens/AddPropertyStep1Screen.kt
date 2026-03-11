@@ -57,7 +57,6 @@ fun AddPropertyStep1Screen(
             .padding(horizontal = 20.dp, vertical = 16.dp),
         verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
-        // ── Título ───────────────────────────────────────────────────────────
         Text(
             text = "Agregar Una Propiedad",
             fontSize = 22.sp,
@@ -65,14 +64,12 @@ fun AddPropertyStep1Screen(
             color = Color.Black
         )
 
-        // ── Toggle Venta / Renta ─────────────────────────────────────────────
         ListingTypeToggle(
             isVenta = uiState.listingType == ListingType.VENTA,
             onVentaClick = { onListingTypeChange(ListingType.VENTA) },
             onRentaClick = { onListingTypeChange(ListingType.RENTA) }
         )
 
-        // ── Ubicación ────────────────────────────────────────────────────────
         SectionHeader(
             icon = { Icon(Icons.Outlined.LocationOn, contentDescription = null) },
             title = "Ubicación"
@@ -106,7 +103,6 @@ fun AddPropertyStep1Screen(
             placeholder = "Escriba la colonia"
         )
 
-        // ── Tipo de propiedad ────────────────────────────────────────────────
         SectionHeader(
             icon = { Icon(Icons.Outlined.Home, contentDescription = null) },
             title = "Tipo De Propiedad"
@@ -120,7 +116,6 @@ fun AddPropertyStep1Screen(
             onItemSelected = onPropertyTypeChange
         )
 
-        // ── Precio ───────────────────────────────────────────────────────────
         SectionHeader(
             icon = { Icon(Icons.Outlined.Sell, contentDescription = null) },
             title = if (uiState.listingType == ListingType.VENTA) "Precio Total" else "Renta Mensual"
@@ -132,7 +127,6 @@ fun AddPropertyStep1Screen(
             placeholder = "Escriba el precio"
         )
 
-        // ── Área del terreno ─────────────────────────────────────────────────
         SectionHeader(
             icon = { Icon(Icons.Outlined.Home, contentDescription = null) },
             title = "Area Del Terreno"
@@ -146,7 +140,6 @@ fun AddPropertyStep1Screen(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // ── Botón siguiente ──────────────────────────────────────────────────
         ViviaButton(
             text = "Siguiente: Detalles De La Propiedad",
             onClick = onNext

@@ -44,7 +44,6 @@ fun AddPropertyStep2Screen(
             .padding(horizontal = 20.dp, vertical = 16.dp),
         verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
-        // ── Habitaciones ─────────────────────────────────────────────────────
         SectionHeader(
             icon = { Icon(Icons.Outlined.Bed, contentDescription = null) },
             title = "Habitaciones"
@@ -56,7 +55,6 @@ fun AddPropertyStep2Screen(
             onSelected = onBedroomsChange
         )
 
-        // ── Baños ────────────────────────────────────────────────────────────
         SectionHeader(
             icon = { Icon(Icons.Outlined.Shower, contentDescription = null) },
             title = "Baños"
@@ -68,7 +66,6 @@ fun AddPropertyStep2Screen(
             onSelected = onBathroomsChange
         )
 
-        // ── Estacionamiento ──────────────────────────────────────────────────
         SectionHeader(
             icon = { Icon(Icons.Outlined.DirectionsCar, contentDescription = null) },
             title = "Espacios De Estacionamiento"
@@ -80,7 +77,6 @@ fun AddPropertyStep2Screen(
             onSelected = onParkingSpacesChange
         )
 
-        // ── Título ───────────────────────────────────────────────────────────
         SectionHeader(
             icon = { Icon(Icons.Outlined.Sell, contentDescription = null) },
             title = "Título Breve"
@@ -92,7 +88,6 @@ fun AddPropertyStep2Screen(
             placeholder = "Añade un título breve..."
         )
 
-        // ── Descripción ──────────────────────────────────────────────────────
         SectionHeader(
             icon = { Icon(Icons.Outlined.Sell, contentDescription = null) },
             title = "Descripción De La Propiedad"
