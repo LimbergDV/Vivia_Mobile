@@ -24,7 +24,8 @@ import com.limbergdv.vivia_mobile.features.users.lessors.presentation.components
 @Composable
 fun LoginLessorScreen(
     onNavigateToRegister: () -> Unit,
-    onFingerprintClick: () -> Unit
+    onFingerprintClick: () -> Unit,
+    onNavigateNext: () -> Unit
 ) {
     var companyName by remember { mutableStateOf("") }
 
@@ -113,6 +114,7 @@ fun LoginLessorScreen(
 fun LoginLessorScreenPreview() {
     LoginLessorScreen(
         onNavigateToRegister = {},
-        onFingerprintClick = {}
+        onFingerprintClick = {},
+        onNavigateNext = {}
     )
 }

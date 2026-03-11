@@ -16,7 +16,10 @@ import com.limbergdv.vivia_mobile.features.home.presentation.components.Secondar
 
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen(
+    toLoginLessee: () -> Unit = {},
+    toOptionsLessor: () -> Unit = {}
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -39,14 +42,14 @@ fun HomeScreen() {
 
         PrimaryButton(
             text = "Buscar un hogar",
-            onClick = { /* Acción de buscar */ }
+            onClick = { toLoginLessee() }
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
         SecondaryTextButton(
             text = "Unirme como arrendador",
-            onClick = { /* Acción de unirse */ }
+            onClick = { toOptionsLessor() }
         )
 
         // Espacio para la barra de navegación del sistema

@@ -26,7 +26,7 @@ import com.limbergdv.vivia_mobile.features.users.lessors.presentation.components
 @Composable
 fun RegisterLesseeScreen(
     onCancelClick: () -> Unit,
-    onFingerprintClick: () -> Unit // Parámetro para conectar la lógica biométrica después
+    onNavigateNext: () -> Unit // Parámetro para conectar la lógica biométrica después
 ) {
     // Estados para los valores del formulario
     var name by remember { mutableStateOf("") }
@@ -101,7 +101,7 @@ fun RegisterLesseeScreen(
         Box(
             modifier = Modifier
                 .size(100.dp)
-                .clickable { onFingerprintClick() },
+                .clickable {  },
             contentAlignment = Alignment.Center
         ) {
             Image(
@@ -127,6 +127,6 @@ fun RegisterLesseeScreen(
 fun RegisterLesseeScreenPreview() {
     RegisterLesseeScreen(
         onCancelClick = {},
-        onFingerprintClick = {}
+        onNavigateNext = {}
     )
 }

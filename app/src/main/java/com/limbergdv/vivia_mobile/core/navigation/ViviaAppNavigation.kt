@@ -5,6 +5,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.limbergdv.vivia_mobile.features.auth.presentation.screens.LoginLesseeScreen
+import com.limbergdv.vivia_mobile.features.auth.presentation.screens.LoginLessorScreen
+import com.limbergdv.vivia_mobile.features.home.presentation.screens.HomeScreen
+import com.limbergdv.vivia_mobile.features.home.presentation.screens.LessorOptionScreen
+import com.limbergdv.vivia_mobile.features.users.lessees.presentation.screens.RegisterLesseeScreen
 import com.limbergdv.vivia_mobile.features.users.lessors.presentation.screens.RegisterLessorScreen
 
 @Composable
@@ -19,14 +24,27 @@ fun ViviaAppNavigation(appNavigator: AppNavigatorImpl) {
     // Definimos el startDestination hacia nuestra vista de pruebas
     NavHost(
         navController = navController,
-        startDestination = AppRoutes.REGISTER_LESSOR
+        startDestination = AppRoutes.HOME
     ) {
+
+        composable(AppRoutes.HOME) {
+            HomeScreen(
+                toOptionsLessor = { AppRoutes.OPTIONSS_LESSOR },
+                toLoginLessee = { AppRoutes.LOGIN_LESSEE }
+            )
+        }
+
+        composable(AppRoutes.OPTIONSS_LESSOR) {
+            LessorOptionScreen(
+                onNavigateBack = { appNavigator.popBackStack() },
+                toLoginLessor = { appNavigator.navigate(AppRoutes.LOGIN_LESSOR) },
+                toRegisterLessor = { appNavigator.navigate(AppRoutes.REGISTER_LESSOR)}
+            )
+        }
 
         composable(AppRoutes.REGISTER_LESSOR) {
             RegisterLessorScreen(
-                onCancelClick = {
-                    // Acción para cancelar, por ejemplo cerrar la app o volver a un Onboarding
-                },
+                onCancelClick = {appNavigator.popBackStack() },
                 onNavigateNext = {
                     // Cuando el registro sea exitoso, navegamos al home
                     appNavigator.navigate(AppRoutes.HOME) {
@@ -37,8 +55,34 @@ fun ViviaAppNavigation(appNavigator: AppNavigatorImpl) {
             )
         }
 
-        composable(AppRoutes.HOME) {
-            // HomeScreen()
+        composable(AppRoutes.REGISTER_LESSEE) {
+            RegisterLesseeScreen(
+                onCancelClick = {appNavigator.popBackStack() },
+                onNavigateNext = {
+                    // Cuando el registro sea exitoso, navegamos al home
+                    appNavigator.navigate(AppRoutes.HOME) {
+                        // Evita que el usuario regrese al registro presionando "Atrás"
+                        popUpTo(AppRoutes.REGISTER_LESSOR) { inclusive = true }
+                    }
+                }
+            )
         }
+
+        composable(AppRoutes.LOGIN_LESSOR) {
+            LoginLessorScreen(
+                onNavigateToRegister = { AppRoutes.REGISTER_LESSOR},
+                onFingerprintClick = {},
+                onNavigateNext = {}
+            )
+        }
+
+        composable(AppRoutes.LOGIN_LESSEE) {
+            LoginLesseeScreen(
+                onNavigateToRegister = { AppRoutes.REGISTER_LESSEE},
+                onFingerprintClick = {},
+                onNavigateNext = {}
+            )
+        }
+
     }
 }

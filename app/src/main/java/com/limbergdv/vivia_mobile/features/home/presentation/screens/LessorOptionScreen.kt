@@ -21,8 +21,8 @@ import com.limbergdv.vivia_mobile.features.home.presentation.components.Secondar
 @Composable
 fun LessorOptionScreen(
     onNavigateBack: () -> Unit,
-    onNavigateToLogin: () -> Unit,
-    onNavigateToRegister: () -> Unit
+    toLoginLessor: () -> Unit,
+    toRegisterLessor: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -52,8 +52,8 @@ fun LessorOptionScreen(
         Spacer(modifier = Modifier.height(32.dp))
 
         OptionsCard(
-            onLoginClick = onNavigateToLogin,
-            onRegisterClick = onNavigateToRegister,
+            onLoginClick = toLoginLessor,
+            onRegisterClick = toRegisterLessor,
             modifier = Modifier.weight(3f, fill = false) // Evita que empuje elementos fuera de pantalla
         )
 
