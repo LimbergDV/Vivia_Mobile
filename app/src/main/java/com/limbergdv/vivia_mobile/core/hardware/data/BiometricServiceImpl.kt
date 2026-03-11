@@ -10,6 +10,7 @@ import androidx.credentials.PublicKeyCredential
 import androidx.credentials.exceptions.CreateCredentialException
 import androidx.credentials.exceptions.GetCredentialException
 import com.limbergdv.vivia_mobile.core.hardware.domain.BiometricService
+import org.json.JSONObject
 import javax.inject.Inject
 
 class BiometricServiceImpl @Inject constructor(
@@ -18,20 +19,45 @@ class BiometricServiceImpl @Inject constructor(
 
     override suspend fun registerBiometric(context: Context, challengeJson: String): Result<String> {
         return try {
-            // Preparamos la petición WebAuthn con el desafío del servidor
-            val request = CreatePublicKeyCredentialRequest(requestJson = challengeJson)
+            val rootObject = JSONObject(challengeJson)
 
-            // Invocamos el hardware. Esto pausa la corrutina y muestra el UI nativo de huella.
+            // 1. Extraemos el objeto interior si viene envuelto en "publicKey"
+            val optionsObject = if (rootObject.has("publicKey")) {
+                rootObject.getJSONObject("publicKey")
+            } else {
+                rootObject
+            }
+
+            // 2. Verificamos que el bloque user tenga el atributo "name"
+            if (optionsObject.has("rp")) {
+                val rpObject = optionsObject.getJSONObject("rp")
+                if (rpObject.optString("id") == "localhost" || rpObject.optString("id").isEmpty()) {
+                    // Cambia esto por el dominio real donde estará alojado tu backend
+                    rpObject.put("id", "vivia.aleosh.online")
+                }
+            }
+
+            if (optionsObject.has("user")) {
+                val userObject = optionsObject.getJSONObject("user")
+                if (!userObject.has("name")) {
+                    userObject.put("name", "Arrendador Vivia")
+                }
+            }
+
+            // 3. Convertimos el objeto desenvuelto y corregido a String
+            val fixedChallengeJson = optionsObject.toString()
+
+            // 4. Pasamos el JSON limpio a Android
+            val request = CreatePublicKeyCredentialRequest(requestJson = fixedChallengeJson)
             val response = credentialManager.createCredential(context, request)
 
-            // Extraemos la respuesta para el servidor
             if (response is CreatePublicKeyCredentialResponse) {
                 Result.success(response.registrationResponseJson)
             } else {
                 Result.failure(Exception("Formato de credencial biométrica no soportado."))
             }
         } catch (e: CreateCredentialException) {
-            Result.failure(Exception("Registro biométrico cancelado o fallido: ${e.message}"))
+            Result.failure(Exception("Registro cancelado o fallido: ${e.message}"))
         } catch (e: Exception) {
             Result.failure(e)
         }
