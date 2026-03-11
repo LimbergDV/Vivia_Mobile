@@ -1,6 +1,5 @@
 package com.limbergdv.vivia_mobile.features.addProperty.presentation.screens
 
-
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -17,14 +16,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.limbergdv.vivia_mobile.features.addProperty.domain.entities.ListingType
 import com.limbergdv.vivia_mobile.features.addProperty.domain.entities.PropertyType
-import com.limbergdv.vivia_mobile.features.addProperty.presentation.components.ListingTypeToggle
-import com.limbergdv.vivia_mobile.features.addProperty.presentation.components.SectionHeader
-import com.limbergdv.vivia_mobile.features.addProperty.presentation.components.ViviaButton
-import com.limbergdv.vivia_mobile.features.addProperty.presentation.components.ViviaDropdown
-import com.limbergdv.vivia_mobile.features.addProperty.presentation.components.ViviaTextField
+import com.limbergdv.vivia_mobile.features.addProperty.presentation.components.*
 
-
-// Listas de ciudades y estados de México (puedes expandir según necesites)
 private val CIUDADES = listOf(
     "Ciudad de México", "Guadalajara", "Monterrey", "Puebla",
     "Mérida", "Tijuana", "León", "Querétaro", "San Luis Potosí", "Aguascalientes"
@@ -49,6 +42,15 @@ fun AddPropertyStep1Screen(
     onError: () -> Unit
 ) {
     val scrollState = rememberScrollState()
+
+    // Estado local de validación — solo se muestra tras intentar avanzar
+    var showErrors by remember { mutableStateOf(false) }
+
+    val cityError        = showErrors && uiState.city.isBlank()
+    val stateError       = showErrors && uiState.state.isBlank()
+    val neighborhoodError = showErrors && uiState.neighborhood.isBlank()
+    val priceError       = showErrors && uiState.price.isBlank()
+    val landAreaError    = showErrors && uiState.landArea.isBlank()
 
     Column(
         modifier = Modifier
@@ -79,29 +81,36 @@ fun AddPropertyStep1Screen(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            ViviaDropdown(
-                selectedItem = uiState.city.ifBlank { null },
-                items = CIUDADES,
-                label = "Ciudad",
-                itemLabel = { it },
-                onItemSelected = onCityChange,
-                modifier = Modifier.weight(1f)
-            )
-            ViviaDropdown(
-                selectedItem = uiState.state.ifBlank { null },
-                items = ESTADOS,
-                label = "Estado",
-                itemLabel = { it },
-                onItemSelected = onStateChange,
-                modifier = Modifier.weight(1f)
-            )
+            Column(modifier = Modifier.weight(1f)) {
+                ViviaDropdown(
+                    selectedItem = uiState.city.ifBlank { null },
+                    items = CIUDADES,
+                    label = "Ciudad",
+                    itemLabel = { it },
+                    onItemSelected = onCityChange
+                )
+                if (cityError) ValidationError("Selecciona una ciudad")
+            }
+            Column(modifier = Modifier.weight(1f)) {
+                ViviaDropdown(
+                    selectedItem = uiState.state.ifBlank { null },
+                    items = ESTADOS,
+                    label = "Estado",
+                    itemLabel = { it },
+                    onItemSelected = onStateChange
+                )
+                if (stateError) ValidationError("Selecciona un estado")
+            }
         }
 
-        ViviaTextField(
-            value = uiState.neighborhood,
-            onValueChange = onNeighborhoodChange,
-            placeholder = "Escriba la colonia"
-        )
+        Column {
+            ViviaTextField(
+                value = uiState.neighborhood,
+                onValueChange = onNeighborhoodChange,
+                placeholder = "Escriba la colonia"
+            )
+            if (neighborhoodError) ValidationError("Escribe la colonia")
+        }
 
         SectionHeader(
             icon = { Icon(Icons.Outlined.Home, contentDescription = null) },
@@ -121,30 +130,54 @@ fun AddPropertyStep1Screen(
             title = if (uiState.listingType == ListingType.VENTA) "Precio Total" else "Renta Mensual"
         )
 
-        ViviaTextField(
-            value = uiState.price,
-            onValueChange = onPriceChange,
-            placeholder = "Escriba el precio"
-        )
+        Column {
+            ViviaTextField(
+                value = uiState.price,
+                onValueChange = onPriceChange,
+                placeholder = "Escriba el precio"
+            )
+            if (priceError) ValidationError("Escribe el precio")
+        }
 
         SectionHeader(
             icon = { Icon(Icons.Outlined.Home, contentDescription = null) },
             title = "Area Del Terreno"
         )
 
-        ViviaTextField(
-            value = uiState.landArea,
-            onValueChange = onLandAreaChange,
-            placeholder = "Escriba el área en m2"
-        )
+        Column {
+            ViviaTextField(
+                value = uiState.landArea,
+                onValueChange = onLandAreaChange,
+                placeholder = "Escriba el área en m2"
+            )
+            if (landAreaError) ValidationError("Escribe el área del terreno")
+        }
 
         Spacer(modifier = Modifier.height(8.dp))
 
         ViviaButton(
             text = "Siguiente: Detalles De La Propiedad",
-            onClick = onNext
+            onClick = {
+                showErrors = true
+                val isValid = uiState.city.isNotBlank()
+                        && uiState.state.isNotBlank()
+                        && uiState.neighborhood.isNotBlank()
+                        && uiState.price.isNotBlank()
+                        && uiState.landArea.isNotBlank()
+                if (isValid) onNext()
+            }
         )
 
         Spacer(modifier = Modifier.height(16.dp))
     }
+}
+
+@Composable
+private fun ValidationError(message: String) {
+    Text(
+        text = "⚠ $message",
+        color = Color(0xFFB00020),
+        fontSize = 12.sp,
+        modifier = Modifier.padding(start = 4.dp, top = 2.dp)
+    )
 }

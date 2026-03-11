@@ -1,11 +1,13 @@
 package com.limbergdv.vivia_mobile.features.addProperty.presentation.screens
 
-
+import androidx.compose.animation.*
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -13,8 +15,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.limbergdv.vivia_mobile.features.addProperty.presentation.components.ViviaNavy
 import com.limbergdv.vivia_mobile.features.addProperty.presentation.viewmodels.AddPropertyViewModel
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -23,11 +25,13 @@ fun AddPropertyScreen(
     onNavigateBack: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val snackbarHostState = remember { SnackbarHostState() }
 
-    // Mostrar error si existe
-    uiState.error?.let { errorMsg ->
-        LaunchedEffect(errorMsg) {
-            // Puedes usar un Snackbar o Dialog aquí según tu design system
+    // Mostrar error en Snackbar (siempre visible, encima de todo)
+    LaunchedEffect(uiState.error) {
+        uiState.error?.let { msg ->
+            snackbarHostState.showSnackbar(message = msg, duration = SnackbarDuration.Short)
+            viewModel.clearError()
         }
     }
 
@@ -65,18 +69,23 @@ fun AddPropertyScreen(
                 )
             )
         },
-        containerColor = Color.White
-    ) { innerPadding ->
-        Box(modifier = Modifier.padding(innerPadding)) {
-
-            // Error Snackbar
-            if (uiState.error != null) {
-                AddPropertyErrorBanner(
-                    message = uiState.error!!,
-                    onDismiss = { viewModel.clearError() }
+        // SnackbarHost siempre se renderiza encima del contenido
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState) { data ->
+                Snackbar(
+                    snackbarData = data,
+                    containerColor = Color(0xFFB00020),
+                    contentColor = Color.White,
+                    actionColor = Color.White
                 )
             }
-
+        },
+        containerColor = Color.White
+    ) { innerPadding ->
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .padding(innerPadding)
+        ) {
             when (uiState.currentStep) {
                 1 -> AddPropertyStep1Screen(
                     uiState              = uiState,
@@ -101,42 +110,14 @@ fun AddPropertyScreen(
                     onBack                = viewModel::onBack
                 )
                 3 -> AddPropertyStep3Screen(
-                    uiState            = uiState,
-                    onImagesSelected   = viewModel::onImagesSelected,
-                    onRemoveImage      = viewModel::onRemoveImage,
-                    onSubmit           = viewModel::onSubmit,
-                    onBack             = viewModel::onBack,
-                    onPrepareCameraUri = { viewModel.prepareCameraUri() },
-                    onPhotoCaptured    = viewModel::onPhotoCaptured
+                    uiState              = uiState,
+                    onImagesSelected     = viewModel::onImagesSelected,
+                    onRemoveImage        = viewModel::onRemoveImage,
+                    onSubmit             = viewModel::onSubmit,
+                    onBack               = viewModel::onBack,
+                    onPrepareCameraUri   = viewModel::prepareCameraUri,
+                    onPhotoCaptured      = viewModel::onPhotoCaptured
                 )
-            }
-        }
-    }
-}
-
-@Composable
-private fun AddPropertyErrorBanner(
-    message: String,
-    onDismiss: () -> Unit
-) {
-    Card(
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFFFEBEB)),
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
-    ) {
-        Row(
-            modifier = Modifier.padding(12.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(
-                text = message,
-                color = Color(0xFFB00020),
-                modifier = Modifier.weight(1f),
-                fontSize = 13.sp
-            )
-            TextButton(onClick = onDismiss) {
-                Text("OK", color = Color(0xFFB00020), fontWeight = FontWeight.Bold)
             }
         }
     }
