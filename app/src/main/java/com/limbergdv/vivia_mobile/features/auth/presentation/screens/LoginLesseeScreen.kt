@@ -1,5 +1,6 @@
 package com.limbergdv.vivia_mobile.features.auth.presentation.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -10,6 +11,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -17,6 +19,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.limbergdv.vivia_mobile.R
 import com.limbergdv.vivia_mobile.features.auth.presentation.components.DividerWithText
 import com.limbergdv.vivia_mobile.features.home.presentation.components.BrandHeader
 import com.limbergdv.vivia_mobile.features.users.lessors.presentation.components.ViviaTextField
@@ -73,7 +76,11 @@ fun LoginLesseeScreen(
                 .clickable { onFingerprintClick() },
             contentAlignment = Alignment.Center
         ) {
-            // Se deja en blanco según las instrucciones
+            Image(
+                painter = painterResource(id = R.drawable.ic_huella_image), // Tu icono de huella
+                contentDescription = "Sensor de huella dactilar",
+                modifier = Modifier.fillMaxSize()
+            )
         }
 
         Spacer(modifier = Modifier.height(48.dp))
