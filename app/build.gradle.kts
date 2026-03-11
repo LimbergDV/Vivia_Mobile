@@ -75,4 +75,8 @@ dependencies {
     implementation(libs.com.squareup.retrofit2.converter.json)
     implementation("androidx.compose.material:material-icons-extended:1.6.3")
     implementation(libs.io.coil.kt.coil.compose)
+
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    ksp(libs.room.compiler)
 }
