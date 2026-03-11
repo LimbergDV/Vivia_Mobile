@@ -1,4 +1,4 @@
-package com.limbergdv.vivia_mobile.features.users.lessors.components
+package com.limbergdv.vivia_mobile.features.users.lessors.presentation.components
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape

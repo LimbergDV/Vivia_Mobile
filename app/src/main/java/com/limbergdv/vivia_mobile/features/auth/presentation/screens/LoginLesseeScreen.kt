@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.limbergdv.vivia_mobile.features.auth.presentation.components.DividerWithText
 import com.limbergdv.vivia_mobile.features.home.presentation.components.BrandHeader
-import com.limbergdv.vivia_mobile.features.users.lessors.components.ViviaTextField
+import com.limbergdv.vivia_mobile.features.users.lessors.presentation.components.ViviaTextField
 
 @Composable
 fun LoginLesseeScreen(
