@@ -1,5 +1,6 @@
 package com.limbergdv.vivia_mobile.features.auth.presentation.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.messaging.FirebaseMessaging
@@ -75,14 +76,39 @@ class LoginLesseeViewModel @Inject constructor(
     }
 
     private fun syncFirebaseToken() {
+        Log.d("VIVIA_FCM_DEBUG", "Iniciando petición de token a Firebase...")
+
         FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
             if (!task.isSuccessful) {
-                return@addOnCompleteListener // Manejar error si es necesario
+                Log.e(
+                    "VIVIA_FCM_DEBUG",
+                    "Fallo al obtener el token FCM: ${task.exception?.message}"
+                )
+                return@addOnCompleteListener
             }
 
             val token = task.result
+            Log.d("VIVIA_FCM_DEBUG", "====================================")
+            Log.d("VIVIA_FCM_DEBUG", "📱 FCM TOKEN GENERADO EXITOSAMENTE")
+            Log.d("VIVIA_FCM_DEBUG", token)
+            Log.d("VIVIA_FCM_DEBUG", "====================================")
+
             viewModelScope.launch {
-                updateFcmTokenUseCase(token)
+                Log.d("VIVIA_FCM_DEBUG", "Enviando token al backend...")
+                val result = updateFcmTokenUseCase(token)
+
+                // Asumiendo que tu useCase devuelve un Result
+                result.fold(
+                    onSuccess = {
+                        Log.d("VIVIA_FCM_DEBUG", "✅ Token guardado en el backend con éxito")
+                    },
+                    onFailure = { e ->
+                        Log.e(
+                            "VIVIA_FCM_DEBUG",
+                            "❌ Error al guardar token en backend: ${e.message}"
+                        )
+                    }
+                )
             }
         }
     }

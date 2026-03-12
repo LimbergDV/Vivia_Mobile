@@ -6,6 +6,7 @@ import android.app.PendingIntent
 import android.content.Intent
 import android.media.RingtoneManager
 import android.os.Build
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
@@ -17,6 +18,10 @@ class FCMService : FirebaseMessagingService() {
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         super.onMessageReceived(remoteMessage)
 
+        Log.d("VIVIA_FCM_DEBUG", "¡Mensaje recibido desde Firebase!")
+        Log.d("VIVIA_FCM_DEBUG", "Datos del payload (Data): ${remoteMessage.data}")
+        Log.d("VIVIA_FCM_DEBUG", "Datos de la notificación: ${remoteMessage.notification?.title} - ${remoteMessage.notification?.body}")
+
         // Comprueba si el mensaje contiene una carga útil de datos
         val title = remoteMessage.notification?.title ?: "Nueva notificación"
         val body = remoteMessage.notification?.body ?: ""
@@ -26,6 +31,7 @@ class FCMService : FirebaseMessagingService() {
 
     override fun onNewToken(token: String) {
         super.onNewToken(token)
+        Log.d("VIVIA_FCM_DEBUG", "Token FCM renovado automáticamente: $token")
         // Aquí podrías enviar el token al backend si el usuario ya está logueado,
         // pero lo manejaremos principalmente en el ViewModel tras el login.
     }
