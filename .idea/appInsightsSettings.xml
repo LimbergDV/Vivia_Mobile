@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.limbergdv.vivia_mobile" />
+                  <option name="mobileSdkAppId" value="1:86205330562:android:da470c2e8ac2a18e49f09b" />
+                  <option name="projectId" value="vivia-mobile-c8cb3" />
+                  <option name="projectNumber" value="86205330562" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

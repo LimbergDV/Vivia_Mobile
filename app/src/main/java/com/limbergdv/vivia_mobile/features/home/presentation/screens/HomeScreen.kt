@@ -1,8 +1,13 @@
 package com.limbergdv.vivia_mobile.features.home.presentation.screens
 
+import android.Manifest
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -20,6 +25,29 @@ fun HomeScreen(
     toLoginLessee: () -> Unit = {},
     toOptionsLessor: () -> Unit = {}
 ) {
+
+    // 1. Preparamos el lanzador para solicitar el permiso
+    val notificationPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+        onResult = { isGranted ->
+            if (isGranted) {
+                // El usuario aceptó las notificaciones
+                // Opcional: Podrías registrar un evento de analítica o mostrar un Toast
+            } else {
+                // El usuario rechazó las notificaciones
+                // Opcional: Podrías mostrar un Snackbar explicando por qué son útiles
+            }
+        }
+    )
+
+    // 2. Ejecutamos la petición solo una vez al componer la pantalla
+    LaunchedEffect(key1 = true) {
+        // Comprobamos si el dispositivo tiene Android 13 (Tiramisu) o superior
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
