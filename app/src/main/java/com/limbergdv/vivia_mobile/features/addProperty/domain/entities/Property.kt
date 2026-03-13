@@ -5,14 +5,15 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class Property(
-    val id: Int = 0,
-    val listingType: ListingType,           // VENTA o RENTA
+    val id: String = "", // <- ¡Cambio importante! Ahora es String por el UUID
+    val listingType: ListingType, // Puedes conservarlo para lógicas de UI (Renta/Venta) aunque no vaya a la API
     val city: String,
     val state: String,
     val neighborhood: String,
+    val address: String = "", // <- Campo agregado para hacer match con tu JSON
     val propertyType: PropertyType,
-    val price: Double,                      // Precio total (venta) o mensual (renta)
-    val landArea: Double,                   // m2
+    val price: Double,
+    val landArea: Double,
     val bedrooms: Int,
     val bathrooms: Int,
     val parkingSpaces: Int,

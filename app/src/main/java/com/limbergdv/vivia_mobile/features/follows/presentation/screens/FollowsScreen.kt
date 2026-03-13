@@ -22,6 +22,7 @@ import com.limbergdv.vivia_mobile.features.users.lessors.domain.entities.Lessor
 
 @Composable
 fun FollowsScreen(
+    onAddPropertyClick: () -> Unit = {},   // ← nuevo parámetro
     viewModel: FollowsViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -52,7 +53,18 @@ fun FollowsScreen(
             fontSize = 14.sp,
             color = Color.Gray
         )
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Botón temporal para navegar a AddProperty
+        Button(
+            onClick = onAddPropertyClick,
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
+        ) {
+            Text("+ Agregar Propiedad (test)", color = Color.White)
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
 
         if (state.isLoading && state.lessors.isEmpty()) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {

@@ -70,7 +70,7 @@ fun ViviaAppNavigation(appNavigator: AppNavigatorImpl) {
                         popUpTo(0) { inclusive = true }
                         launchSingleTop = true
                     }
-                                },
+                },
                 onNavigateNext = {
                     // Cuando el registro sea exitoso, navegamos al home
                     appNavigator.navigate(AppRoutes.LOGIN_LESSEE) {

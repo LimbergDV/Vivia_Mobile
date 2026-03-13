@@ -25,14 +25,13 @@ class AddPropertyViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(AddPropertyUiState())
     val uiState = _uiState.asStateFlow()
 
-    // Guarda el Uri creado para la cámara hasta que la foto sea confirmada
     private var pendingCameraUri: Uri? = null
 
     init {
         loadDraft()
     }
 
-    // ── Carga del borrador ────────────────────────────────────────────────────
+    // ── Borrador ──────────────────────────────────────────────────────────────
 
     private fun loadDraft() {
         useCases.getDraft().onEach { savedDraft ->
@@ -42,15 +41,13 @@ class AddPropertyViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
-    // ── Auto-save ─────────────────────────────────────────────────────────────
-
     private fun saveDraft() {
         viewModelScope.launch {
             useCases.saveDraft(_uiState.value)
         }
     }
 
-    // ── Paso 1: Información básica ────────────────────────────────────────────
+    // ── Paso 1 ────────────────────────────────────────────────────────────────
 
     fun onListingTypeChange(type: ListingType) {
         _uiState.update { it.copy(listingType = type) }
@@ -87,7 +84,7 @@ class AddPropertyViewModel @Inject constructor(
         saveDraft()
     }
 
-    // ── Paso 2: Detalles ──────────────────────────────────────────────────────
+    // ── Paso 2 ────────────────────────────────────────────────────────────────
 
     fun onBedroomsChange(value: Int?) {
         _uiState.update { it.copy(bedrooms = value) }
@@ -114,7 +111,7 @@ class AddPropertyViewModel @Inject constructor(
         saveDraft()
     }
 
-    // ── Paso 3: Imágenes ──────────────────────────────────────────────────────
+    // ── Paso 3 ────────────────────────────────────────────────────────────────
 
     fun onImagesSelected(uris: List<Uri>) {
         _uiState.update { current ->
@@ -166,8 +163,6 @@ class AddPropertyViewModel @Inject constructor(
         }
     }
 
-    // ── Aliases que usa AddPropertyScreen ─────────────────────────────────────
-
     fun onBack() = onPreviousStep()
     fun onNextFromStep1() = onNextStep()
     fun onNextFromStep2() = onNextStep()
@@ -184,6 +179,21 @@ class AddPropertyViewModel @Inject constructor(
 
     fun onSubmit() {
         val state = _uiState.value
+
+        // Log para ver el estado completo antes de enviar
+        android.util.Log.d("VIVIA_PROPERTY_DEBUG", "=== UiState al hacer submit ===")
+        android.util.Log.d("VIVIA_PROPERTY_DEBUG", "city: '${state.city}'")
+        android.util.Log.d("VIVIA_PROPERTY_DEBUG", "state: '${state.state}'")
+        android.util.Log.d("VIVIA_PROPERTY_DEBUG", "neighborhood: '${state.neighborhood}'")
+        android.util.Log.d("VIVIA_PROPERTY_DEBUG", "price: '${state.price}'")
+        android.util.Log.d("VIVIA_PROPERTY_DEBUG", "landArea: '${state.landArea}'")
+        android.util.Log.d("VIVIA_PROPERTY_DEBUG", "title: '${state.title}'")
+        android.util.Log.d("VIVIA_PROPERTY_DEBUG", "description: '${state.description}'")
+        android.util.Log.d("VIVIA_PROPERTY_DEBUG", "bedrooms: ${state.bedrooms}")
+        android.util.Log.d("VIVIA_PROPERTY_DEBUG", "bathrooms: ${state.bathrooms}")
+        android.util.Log.d("VIVIA_PROPERTY_DEBUG", "parkingSpaces: ${state.parkingSpaces}")
+        android.util.Log.d("VIVIA_PROPERTY_DEBUG", "currentStep: ${state.currentStep}")
+
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
             try {
@@ -214,7 +224,6 @@ class AddPropertyViewModel @Inject constructor(
                         _uiState.update { it.copy(isLoading = false, error = error.message) }
                     }
                 )
-
             } catch (e: Exception) {
                 _uiState.update { it.copy(isLoading = false, error = e.message) }
             }

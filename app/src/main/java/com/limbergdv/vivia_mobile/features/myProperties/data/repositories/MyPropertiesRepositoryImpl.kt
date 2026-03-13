@@ -17,8 +17,8 @@ class MyPropertiesRepositoryImpl @Inject constructor(
 ) : MyPropertiesRepository {
 
     override fun observeMyProperties(): Flow<List<Property>> {
-        return propertyDao.observeAll().map { entities -> 
-            entities.map { it.toDomain() } 
+        return propertyDao.observeAll().map { entities ->
+            entities.map { it.toDomain() }
         }
     }
 

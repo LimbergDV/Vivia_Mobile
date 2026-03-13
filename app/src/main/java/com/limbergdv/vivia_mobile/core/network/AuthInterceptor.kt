@@ -12,7 +12,7 @@ class AuthInterceptor @Inject constructor (
     override fun intercept(chain: Interceptor.Chain): Response {
         val originalRequest = chain.request()
         val token = tokenDataStore.getToken()
-
+        android.util.Log.d("VIVIA_TOKEN_DEBUG", "Token en interceptor: $token")
         // Si no hay token, hacemos la petición normal (ej. Login/Register)
         if (token == null) {
             return chain.proceed(originalRequest)

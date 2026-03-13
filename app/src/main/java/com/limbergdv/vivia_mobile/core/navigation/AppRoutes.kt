@@ -10,5 +10,6 @@ object AppRoutes {
     const val LOGIN_LESSOR = "login_lessor"
     const val FOLLOWS_LIST = "follows_list"
 
+    const val ADD_PROPERTY = "add_property"
     const val MY_PROPERTIES = "my_properties"
 }

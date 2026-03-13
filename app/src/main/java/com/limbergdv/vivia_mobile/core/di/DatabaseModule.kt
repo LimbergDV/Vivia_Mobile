@@ -22,11 +22,11 @@ object DatabaseModule {
             context,
             AppDatabase::class.java,
             "ViviaDB"
-        ).build()
+        )
+            .addMigrations(AppDatabase.MIGRATION_1_2)   // ← migration nueva
+            .build()
     }
 
-    // Proveemos el DAO individualmente para que la feature solo pida lo que necesita
-    // — mismo patrón que providePostDao() en el repo de referencia
     @Provides
     fun providePropertyDraftDao(db: AppDatabase): PropertyDraftDao = db.propertyDraftDao()
 

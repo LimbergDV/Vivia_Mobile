@@ -6,40 +6,36 @@ import com.limbergdv.vivia_mobile.features.addProperty.domain.entities.ListingTy
 import com.limbergdv.vivia_mobile.features.addProperty.domain.entities.Property
 import com.limbergdv.vivia_mobile.features.addProperty.domain.entities.PropertyType
 
-fun PropertyDto.toDomain(): Property {
-    return Property(
-        id            = id ?: 0,
-        listingType   = runCatching { ListingType.valueOf(listing_type ?: "") }.getOrDefault(ListingType.VENTA),
-        city          = city ?: "",
-        state         = state ?: "",
-        neighborhood  = neighborhood ?: "",
-        propertyType  = runCatching { PropertyType.valueOf(property_type ?: "") }.getOrDefault(PropertyType.PISOS_DEPARTAMENTOS),
-        price         = price ?: 0.0,
-        landArea      = land_area ?: 0.0,
-        bedrooms      = bedrooms ?: 1,
-        bathrooms     = bathrooms ?: 1,
-        parkingSpaces = parking_spaces ?: 0,
-        title         = title ?: "",
-        description   = description ?: "",
-        imageUris     = image_urls ?: emptyList()
-    )
-}
+fun PropertyDto.toDomain(): Property = Property(
+    id            = "",
+    listingType   = ListingType.VENTA,
+    city          = city ?: "",
+    state         = state ?: "",
+    neighborhood  = neighborhood ?: "",
+    propertyType  = runCatching {
+        PropertyType.valueOf(departmentType ?: "")
+    }.getOrDefault(PropertyType.PISOS_DEPARTAMENTOS),
+    price         = price ?: 0.0,
+    landArea      = area ?: 0.0,
+    bedrooms      = roomsNumber ?: 1,
+    bathrooms     = bathroomsNumber ?: 1,
+    parkingSpaces = parkingNumber ?: 0,
+    title         = title ?: "",
+    description   = description ?: "",
+    imageUris     = imageUrls ?: emptyList()
+)
 
-fun Property.toRequest(): CreatePropertyRequest {
-    return CreatePropertyRequest(
-        listing_type   = listingType.name,
-        city           = city,
-        state          = state,
-        neighborhood   = neighborhood,
-        property_type  = propertyType.name,
-        price          = price,
-        land_area      = landArea,
-        bedrooms       = bedrooms,
-        bathrooms      = bathrooms,
-        parking_spaces = parkingSpaces,
-        title          = title,
-        description    = description
-    )
-}
-
-
+fun Property.toRequest(): CreatePropertyRequest = CreatePropertyRequest(
+    title           = title,
+    description     = description,
+    price           = price,
+    address         = "$neighborhood, $city, $state",
+    city            = city,
+    state           = state,
+    neighborhood    = neighborhood,
+    departmentType  = propertyType.name,
+    area            = landArea,
+    roomsNumber     = bedrooms,
+    bathroomsNumber = bathrooms,
+    parkingNumber   = parkingSpaces
+)
