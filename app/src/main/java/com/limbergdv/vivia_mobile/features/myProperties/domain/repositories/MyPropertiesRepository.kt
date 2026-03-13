@@ -6,5 +6,5 @@ import kotlinx.coroutines.flow.Flow
 interface MyPropertiesRepository {
     fun observeMyProperties(): Flow<List<Property>>
     fun getPropertyById(id: String): Flow<Property>
-    suspend fun syncMyProperties(companyName: String): Result<Unit>
+    suspend fun syncMyProperties(): Result<Unit>
 }

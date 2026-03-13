@@ -1,5 +1,10 @@
 package com.limbergdv.vivia_mobile.features.myProperties.data.datasources.remote.dtos
 
+data class PropertyListWrapper(
+    val success: Boolean,
+    val message: String?,
+    val data: List<PropertyResponseDto>?
+)
 data class PropertyResponseDto(
     val id: String,
     val title: String,

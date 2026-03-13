@@ -70,7 +70,7 @@ fun MyPropertiesScreen(
     ) { innerPadding ->
         PullToRefreshBox(
             isRefreshing = uiState.isSyncing,
-            onRefresh = { viewModel.syncProperties(companyName) },
+            onRefresh = { viewModel.syncProperties() },
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)

@@ -1,5 +1,6 @@
 package com.limbergdv.vivia_mobile.features.myProperties.presentation.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.limbergdv.vivia_mobile.features.myProperties.domain.usecases.ObserveMyPropertiesUseCase
@@ -24,28 +25,37 @@ class MyPropertiesViewModel @Inject constructor(
     val uiState: StateFlow<MyPropertiesUiState> = _uiState.asStateFlow()
 
     init {
+        Log.d("MyPropertiesVM", "ViewModel inicializado. Ejecutando init...")
         observeProperties()
+        syncProperties() // Llamada directa apenas se abre la pantalla
     }
 
     private fun observeProperties() {
         observeMyPropertiesUseCase()
             .onEach { properties ->
+                Log.d("MyPropertiesVM", "Room detectó cambios. Enviando ${properties.size} propiedades a la UI.")
                 _uiState.update { it.copy(properties = properties) }
             }
             .launchIn(viewModelScope)
     }
 
-    fun syncProperties(companyName: String) {
+    fun syncProperties() {
         viewModelScope.launch {
+            Log.d("MyPropertiesVM", "Iniciando UI Sync (isSyncing = true)")
             _uiState.update { it.copy(isSyncing = true, errorMessage = null) }
-            val result = syncMyPropertiesUseCase(companyName)
-            
-            result.onSuccess {
-                _uiState.update { it.copy(isSyncing = false) }
+
+            val result = syncMyPropertiesUseCase.invoke("")
+
+            if (result.isSuccess) {
+                Log.d("MyPropertiesVM", "Sincronización finalizada con éxito desde el UseCase.")
+            } else {
+                val errorMsg = result.exceptionOrNull()?.message ?: "Error desconocido"
+                Log.e("MyPropertiesVM", "Sincronización falló: $errorMsg")
+                _uiState.update { it.copy(errorMessage = errorMsg) }
             }
-            .onFailure { error ->
-                _uiState.update { it.copy(isSyncing = false, errorMessage = error.message ?: "Error syncing properties") }
-            }
+
+            Log.d("MyPropertiesVM", "Finalizando UI Sync (isSyncing = false)")
+            _uiState.update { it.copy(isSyncing = false) }
         }
     }
 

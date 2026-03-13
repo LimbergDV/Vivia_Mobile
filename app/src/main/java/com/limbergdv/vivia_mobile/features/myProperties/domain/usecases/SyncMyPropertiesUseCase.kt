@@ -7,6 +7,6 @@ class SyncMyPropertiesUseCase @Inject constructor(
     private val repository: MyPropertiesRepository
 ) {
     suspend operator fun invoke(companyName: String): Result<Unit> {
-        return repository.syncMyProperties(companyName)
+        return repository.syncMyProperties()
     }
 }
