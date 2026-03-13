@@ -6,7 +6,6 @@ import com.limbergdv.vivia_mobile.features.addProperty.domain.entities.PropertyT
 
 class PropertyConverters {
 
-    // ── Lista de imágenes (URIs separadas por coma) ──────────────────────────
     @TypeConverter
     fun fromImageList(images: List<String>): String = images.joinToString(",")
 
