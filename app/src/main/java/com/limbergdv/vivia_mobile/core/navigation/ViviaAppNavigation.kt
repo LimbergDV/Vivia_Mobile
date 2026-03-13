@@ -10,6 +10,7 @@ import com.limbergdv.vivia_mobile.features.auth.presentation.screens.LoginLessor
 import com.limbergdv.vivia_mobile.features.follows.presentation.screens.FollowsScreen
 import com.limbergdv.vivia_mobile.features.home.presentation.screens.HomeScreen
 import com.limbergdv.vivia_mobile.features.home.presentation.screens.LessorOptionScreen
+import com.limbergdv.vivia_mobile.features.myProperties.presentation.screens.MyPropertiesScreen
 import com.limbergdv.vivia_mobile.features.users.lessees.presentation.screens.RegisterLesseeScreen
 import com.limbergdv.vivia_mobile.features.users.lessors.presentation.screens.RegisterLessorScreen
 
@@ -82,7 +83,7 @@ fun ViviaAppNavigation(appNavigator: AppNavigatorImpl) {
         composable(AppRoutes.LOGIN_LESSOR) {
             LoginLessorScreen(
                 onNavigateToRegister = { appNavigator.navigate(AppRoutes.REGISTER_LESSOR) },
-                onNavigateNext = {}
+                onNavigateNext = { appNavigator.navigate(AppRoutes.MY_PROPERTIES) }
             )
         }
 
@@ -101,6 +102,14 @@ fun ViviaAppNavigation(appNavigator: AppNavigatorImpl) {
 
         composable(AppRoutes.FOLLOWS_LIST) {
             FollowsScreen()
+        }
+
+        composable(AppRoutes.MY_PROPERTIES) {
+            MyPropertiesScreen(
+                onNavigate = {},
+                onPropertyClick = {},
+                onAddPropertyClick = {}
+            )
         }
 
     }
