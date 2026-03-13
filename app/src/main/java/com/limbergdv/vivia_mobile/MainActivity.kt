@@ -36,7 +36,7 @@ class MainActivity : ComponentActivity() {
                 startDestination = "my_properties_graph"
             ) {
                 navGraphs.forEach { graph ->
-                    graph.register(this, navController)  // 👈 pasas el navController directo
+                    graph.register(this, navController)
                 }
             }
         }
