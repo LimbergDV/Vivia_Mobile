@@ -27,7 +27,7 @@ class MyPropertiesRepositoryImpl @Inject constructor(
 
     override suspend fun syncMyProperties(companyName: String): Result<Unit> {
         return try {
-            val response = myPropertiesApi.getPropertiesByLessor(companyName)
+            val response = myPropertiesApi.getPropertiesByLessor()
             if (response.isSuccessful) {
                 val dtos = response.body() ?: emptyList()
                 val entities = dtos.map { it.toEntity() }

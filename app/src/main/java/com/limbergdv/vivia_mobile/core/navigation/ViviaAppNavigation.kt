@@ -11,6 +11,7 @@ import com.limbergdv.vivia_mobile.features.follows.presentation.screens.FollowsS
 import com.limbergdv.vivia_mobile.features.home.presentation.screens.HomeScreen
 import com.limbergdv.vivia_mobile.features.home.presentation.screens.LessorOptionScreen
 import com.limbergdv.vivia_mobile.features.myProperties.presentation.screens.MyPropertiesScreen
+import com.limbergdv.vivia_mobile.features.myProperties.presentation.screens.PropertyDetailScreen
 import com.limbergdv.vivia_mobile.features.users.lessees.presentation.screens.RegisterLesseeScreen
 import com.limbergdv.vivia_mobile.features.users.lessors.presentation.screens.RegisterLessorScreen
 
@@ -83,7 +84,14 @@ fun ViviaAppNavigation(appNavigator: AppNavigatorImpl) {
         composable(AppRoutes.LOGIN_LESSOR) {
             LoginLessorScreen(
                 onNavigateToRegister = { appNavigator.navigate(AppRoutes.REGISTER_LESSOR) },
-                onNavigateNext = { appNavigator.navigate(AppRoutes.MY_PROPERTIES) }
+                onNavigateNext = {
+                    // Al loguearse exitosamente, limpiamos toda la pila de navegación (popUpTo(0))
+                    // para que "Mis Propiedades" sea la nueva pantalla base y no pueda volver atrás al Login.
+                    appNavigator.navigate(AppRoutes.MY_PROPERTIES) {
+                        popUpTo(0) { inclusive = true }
+                        launchSingleTop = true
+                    }
+                }
             )
         }
 
@@ -106,11 +114,27 @@ fun ViviaAppNavigation(appNavigator: AppNavigatorImpl) {
 
         composable(AppRoutes.MY_PROPERTIES) {
             MyPropertiesScreen(
-                onNavigate = {},
-                onPropertyClick = {},
-                onAddPropertyClick = {}
+                onNavigate = { destination -> appNavigator.navigate(destination) },
+                onPropertyClick = { propertyId ->
+                    // Navega a los detalles pasando el ID de la propiedad seleccionada
+                    appNavigator.navigate("property_details/$propertyId")
+                },
+                onAddPropertyClick = {
+                    // Aquí asumimos que tienes una ruta para crear propiedades, por ejemplo AppRoutes.ADD_PROPERTY
+                    // appNavigator.navigate(AppRoutes.ADD_PROPERTY)
+                }
             )
         }
 
+        // Agregamos la ruta dinámica para la vista de detalles que implementaste en la Fase 3
+        composable("property_details/{propertyId}") { backStackEntry ->
+            // La vista de detalles misma extraerá el ID mediante el SavedStateHandle de su ViewModel,
+            // pero el Navigation Graph debe saber cómo recibir el argumento en la URL.
+            PropertyDetailScreen(
+                onBack = {
+                    appNavigator.popBackStack()
+                }
+            )
+        }
     }
 }

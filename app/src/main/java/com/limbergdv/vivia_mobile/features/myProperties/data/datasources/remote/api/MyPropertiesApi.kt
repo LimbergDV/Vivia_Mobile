@@ -6,8 +6,6 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 
 interface MyPropertiesApi {
-    @GET("/properties/lessor/{companyName}")
-    suspend fun getPropertiesByLessor(
-        @Path("companyName") companyName: String
-    ): Response<List<PropertyResponseDto>>
+    @GET("/properties/lessor")
+    suspend fun getPropertiesByLessor(): Response<List<PropertyResponseDto>>
 }
