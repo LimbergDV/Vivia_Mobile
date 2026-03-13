@@ -1,8 +1,8 @@
 package com.limbergdv.vivia_mobile.core.database.converters
 
 import androidx.room.TypeConverter
-import com.limbergdv.vivia_mobile.features.addProperty.domain.entities.ListingType
-import com.limbergdv.vivia_mobile.features.addProperty.domain.entities.PropertyType
+import com.limbergdv.vivia_mobile.features.properties.local.domain.entities.ListingType
+import com.limbergdv.vivia_mobile.features.properties.local.domain.entities.PropertyType
 
 class PropertyConverters {
 

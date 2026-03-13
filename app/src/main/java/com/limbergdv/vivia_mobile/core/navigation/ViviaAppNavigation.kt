@@ -10,8 +10,10 @@ import com.limbergdv.vivia_mobile.features.auth.presentation.screens.LoginLessor
 import com.limbergdv.vivia_mobile.features.follows.presentation.screens.FollowsScreen
 import com.limbergdv.vivia_mobile.features.home.presentation.screens.HomeScreen
 import com.limbergdv.vivia_mobile.features.home.presentation.screens.LessorOptionScreen
-import com.limbergdv.vivia_mobile.features.myProperties.presentation.screens.MyPropertiesScreen
-import com.limbergdv.vivia_mobile.features.myProperties.presentation.screens.PropertyDetailScreen
+import com.limbergdv.vivia_mobile.features.properties.local.presentation.screens.AddPropertyScreen
+import com.limbergdv.vivia_mobile.features.properties.remote.navigation.MyPropertiesRoutes
+import com.limbergdv.vivia_mobile.features.properties.remote.presentation.screens.MyPropertiesScreen
+import com.limbergdv.vivia_mobile.features.properties.remote.presentation.screens.PropertyDetailScreen
 import com.limbergdv.vivia_mobile.features.users.lessees.presentation.screens.RegisterLesseeScreen
 import com.limbergdv.vivia_mobile.features.users.lessors.presentation.screens.RegisterLessorScreen
 
@@ -121,7 +123,7 @@ fun ViviaAppNavigation(appNavigator: AppNavigatorImpl) {
                 },
                 onAddPropertyClick = {
                     // Aquí asumimos que tienes una ruta para crear propiedades, por ejemplo AppRoutes.ADD_PROPERTY
-                    // appNavigator.navigate(AppRoutes.ADD_PROPERTY)
+                    appNavigator.navigate(AppRoutes.ADD_PROPERTY)
                 }
             )
         }
@@ -133,6 +135,17 @@ fun ViviaAppNavigation(appNavigator: AppNavigatorImpl) {
             PropertyDetailScreen(
                 onBack = {
                     appNavigator.popBackStack()
+                }
+            )
+        }
+
+        composable(AppRoutes.ADD_PROPERTY) {
+            AddPropertyScreen(
+                onNavigateBack = {
+                    // 2. Navegamos a My Properties y limpiamos la pila para forzar recarga
+                    navController.navigate(AppRoutes.MY_PROPERTIES) {
+                        popUpTo(MyPropertiesRoutes.MY_PROPERTIES_LIST) { inclusive = true }
+                    }
                 }
             )
         }

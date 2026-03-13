@@ -2,8 +2,8 @@ package com.limbergdv.vivia_mobile.core.database.entities
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.limbergdv.vivia_mobile.features.addProperty.domain.entities.ListingType
-import com.limbergdv.vivia_mobile.features.addProperty.domain.entities.PropertyType
+import com.limbergdv.vivia_mobile.features.properties.local.domain.entities.ListingType
+import com.limbergdv.vivia_mobile.features.properties.local.domain.entities.PropertyType
 
 /**
  * Entidad Room que persiste el borrador del formulario "Agregar Propiedad".
