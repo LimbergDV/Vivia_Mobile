@@ -29,4 +29,7 @@ object DatabaseModule {
 
     @Provides
     fun providePropertyDraftDao(db: AppDatabase): PropertyDraftDao = db.propertyDraftDao()
+
+    @Provides
+    fun providePropertyDao(db: AppDatabase): com.limbergdv.vivia_mobile.core.database.dao.PropertyDao = db.propertyDao()
 }

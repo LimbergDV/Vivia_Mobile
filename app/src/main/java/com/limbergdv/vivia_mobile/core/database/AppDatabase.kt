@@ -12,6 +12,9 @@ import com.limbergdv.vivia_mobile.core.database.entities.PropertyDraftEntity
 @Database(
     entities = [
         PropertyDraftEntity::class,
+
+        com.limbergdv.vivia_mobile.core.database.entities.PropertyEntity::class,
+        // Agregar aquí más entidades en el futuro
     ],
     version = 2,                // ← incrementado de 1 a 2
     exportSchema = false
@@ -33,4 +36,5 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
     }
+    abstract fun propertyDao(): com.limbergdv.vivia_mobile.core.database.dao.PropertyDao
 }

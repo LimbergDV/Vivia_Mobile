@@ -84,4 +84,5 @@ dependencies {
     implementation(libs.androidx.credentials.play.services.auth)
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.messaging)
+    implementation("androidx.compose.material3:material3:1.2.1")
 }
