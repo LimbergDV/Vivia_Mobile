@@ -32,6 +32,8 @@ abstract class HardwareModule {
 
 }
 
+@Module
+@InstallIn(SingletonComponent::class)
 object HardwareProviderModule {
 
     @Provides
