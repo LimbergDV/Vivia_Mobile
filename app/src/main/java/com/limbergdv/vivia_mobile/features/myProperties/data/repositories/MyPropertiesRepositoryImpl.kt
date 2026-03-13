@@ -1,70 +1,55 @@
 package com.limbergdv.vivia_mobile.features.myProperties.data.repositories
 
-import com.limbergdv.vivia_mobile.features.addProperty.domain.entities.ListingType
-import com.limbergdv.vivia_mobile.features.addProperty.domain.entities.Property
-import com.limbergdv.vivia_mobile.features.addProperty.domain.entities.PropertyType
+import android.util.Log
+import com.limbergdv.vivia_mobile.core.database.dao.PropertyDao
+import com.limbergdv.vivia_mobile.features.myProperties.data.datasources.remote.api.MyPropertiesApi
+import com.limbergdv.vivia_mobile.features.myProperties.data.mappers.toDomain
+import com.limbergdv.vivia_mobile.features.myProperties.data.mappers.toEntity
+import com.limbergdv.vivia_mobile.features.myProperties.domain.entities.Property
 import com.limbergdv.vivia_mobile.features.myProperties.domain.repositories.MyPropertiesRepository
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class MyPropertiesRepositoryImpl @Inject constructor(
-    // TODO: Agregar api: MyPropertiesApi cuando el backend esté listo
+    private val propertyDao: PropertyDao,
+    private val myPropertiesApi: MyPropertiesApi
 ) : MyPropertiesRepository {
 
-    override fun getMyProperties(): Flow<List<Property>> {
-        // Stub con datos de ejemplo — reemplazar con llamada real a la API
-        return flowOf(
-            listOf(
-                Property(
-                    id            = 1,
-                    listingType   = ListingType.VENTA,
-                    city          = "Mérida",
-                    state         = "Yucatán",
-                    neighborhood  = "Montejo",
-                    propertyType  = PropertyType.CASAS,
-                    price         = 2000000.0,
-                    landArea      = 2000.0,
-                    bedrooms      = 4,
-                    bathrooms     = 3,
-                    parkingSpaces = 2,
-                    title         = "Casa en venta en Montejo",
-                    description   = "Hermosa casa en el exclusivo fraccionamiento Montejo con acabados de lujo, amplio jardín y alberca privada.",
-                    imageUris     = emptyList()
-                ),
-                Property(
-                    id            = 2,
-                    listingType   = ListingType.RENTA,
-                    city          = "Mérida",
-                    state         = "Yucatán",
-                    neighborhood  = "Altabrisa",
-                    propertyType  = PropertyType.PISOS_DEPARTAMENTOS,
-                    price         = 18000.0,
-                    landArea      = 120.0,
-                    bedrooms      = 2,
-                    bathrooms     = 2,
-                    parkingSpaces = 1,
-                    title         = "Departamento en Altabrisa",
-                    description   = "Departamento moderno en zona norte de Mérida, cerca de centros comerciales y hospitales.",
-                    imageUris     = emptyList()
-                ),
-                Property(
-                    id            = 3,
-                    listingType   = ListingType.VENTA,
-                    city          = "Mérida",
-                    state         = "Yucatán",
-                    neighborhood  = "García Ginerés",
-                    propertyType  = PropertyType.CASAS,
-                    price         = 4000000.0,
-                    landArea      = 500.0,
-                    bedrooms      = 5,
-                    bathrooms     = 4,
-                    parkingSpaces = 3,
-                    title         = "Casa colonial en García Ginerés",
-                    description   = "Espectacular casa con arquitectura colonial restaurada, 5 habitaciones, jardín tropical y alberca.",
-                    imageUris     = emptyList()
-                )
-            )
-        )
+    override fun observeMyProperties(): Flow<List<Property>> {
+        return propertyDao.observeAll().map { entities -> 
+            entities.map { it.toDomain() } 
+        }
+    }
+
+    override fun getPropertyById(id: String): Flow<Property> {
+        return propertyDao.observeById(id).map { it.toDomain() }
+    }
+
+    override suspend fun syncMyProperties(): Result<Unit> {
+        return try {
+            Log.d("SyncProperties", "1. Iniciando petición HTTP a la API...")
+            val response = myPropertiesApi.getPropertiesByLessor()
+
+            if (response.isSuccessful) {
+                // 3. Extraemos el campo 'data' del wrapper
+                val dtos = response.body()?.data ?: emptyList()
+                Log.d("SyncProperties", "2. Petición HTTP exitosa. Propiedades recibidas: ${dtos.size}")
+
+                val entities = dtos.map { it.toEntity() }
+                propertyDao.insertAll(entities)
+                Log.d("SyncProperties", "3. Propiedades guardadas en Room correctamente.")
+
+                Result.success(Unit)
+            } else {
+                val errorBody = response.errorBody()?.string()
+                Log.e("SyncProperties", "Error HTTP ${response.code()}: $errorBody")
+                Result.failure(Exception("Error en la petición: ${response.code()}"))
+            }
+        } catch (e: Exception) {
+            // Aquí es donde estaba ocurriendo tu error silencioso
+            Log.e("SyncProperties", "Excepción crítica al sincronizar: ${e.message}", e)
+            Result.failure(e)
+        }
     }
 }
