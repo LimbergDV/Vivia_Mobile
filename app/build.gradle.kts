@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.devtools.ksp)
     id("kotlin-parcelize")
+    alias(libs.plugins.google.services)
 }
 
 android {
@@ -76,9 +77,11 @@ dependencies {
     implementation(libs.com.squareup.retrofit2.converter.json)
     implementation("androidx.compose.material:material-icons-extended:1.6.3")
     implementation(libs.io.coil.kt.coil.compose)
-
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
     ksp(libs.room.compiler)
-
+    implementation(libs.androidx.credentials)
+    implementation(libs.androidx.credentials.play.services.auth)
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.messaging)
 }

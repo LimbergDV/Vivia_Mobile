@@ -16,6 +16,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.limbergdv.vivia_mobile.core.navigation.FeatureNavGraph
 import com.limbergdv.vivia_mobile.core.navigation.LocalRootNavController
+import com.limbergdv.vivia_mobile.core.navigation.AppNavigatorImpl
+import com.limbergdv.vivia_mobile.core.navigation.ViviaAppNavigation
 import com.limbergdv.vivia_mobile.core.theme.AppTheme
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -25,10 +27,13 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var navGraphs: Set<@JvmSuppressWildcards FeatureNavGraph>
+    @Inject
+    lateinit var appNavigator: AppNavigatorImpl
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+            /*
             val navController = rememberNavController()
 
             NavHost(
@@ -37,7 +42,10 @@ class MainActivity : ComponentActivity() {
             ) {
                 navGraphs.forEach { graph ->
                     graph.register(this, navController)
-                }
+                }*/
+
+            AppTheme {
+                ViviaAppNavigation(appNavigator)
             }
         }
     }
