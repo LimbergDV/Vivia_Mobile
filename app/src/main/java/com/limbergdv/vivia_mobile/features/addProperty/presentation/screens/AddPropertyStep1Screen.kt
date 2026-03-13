@@ -43,14 +43,13 @@ fun AddPropertyStep1Screen(
 ) {
     val scrollState = rememberScrollState()
 
-    // Estado local de validación — solo se muestra tras intentar avanzar
     var showErrors by remember { mutableStateOf(false) }
 
-    val cityError        = showErrors && uiState.city.isBlank()
-    val stateError       = showErrors && uiState.state.isBlank()
+    val cityError         = showErrors && uiState.city.isBlank()
+    val stateError        = showErrors && uiState.state.isBlank()
     val neighborhoodError = showErrors && uiState.neighborhood.isBlank()
-    val priceError       = showErrors && uiState.price.isBlank()
-    val landAreaError    = showErrors && uiState.landArea.isBlank()
+    val priceError        = showErrors && uiState.price.isBlank()
+    val landAreaError     = showErrors && uiState.landArea.isBlank()
 
     Column(
         modifier = Modifier
@@ -67,13 +66,13 @@ fun AddPropertyStep1Screen(
         )
 
         ListingTypeToggle(
-            isVenta = uiState.listingType == ListingType.VENTA,
+            isVenta      = uiState.listingType == ListingType.VENTA,
             onVentaClick = { onListingTypeChange(ListingType.VENTA) },
             onRentaClick = { onListingTypeChange(ListingType.RENTA) }
         )
 
         SectionHeader(
-            icon = { Icon(Icons.Outlined.LocationOn, contentDescription = null) },
+            icon  = { Icon(Icons.Outlined.LocationOn, contentDescription = null) },
             title = "Ubicación"
         )
 
@@ -83,20 +82,20 @@ fun AddPropertyStep1Screen(
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 ViviaDropdown(
-                    selectedItem = uiState.city.ifBlank { null },
-                    items = CIUDADES,
-                    label = "Ciudad",
-                    itemLabel = { it },
+                    selectedItem   = uiState.city.ifBlank { null },
+                    items          = CIUDADES,
+                    label          = "Ciudad",
+                    itemLabel      = { it },
                     onItemSelected = onCityChange
                 )
                 if (cityError) ValidationError("Selecciona una ciudad")
             }
             Column(modifier = Modifier.weight(1f)) {
                 ViviaDropdown(
-                    selectedItem = uiState.state.ifBlank { null },
-                    items = ESTADOS,
-                    label = "Estado",
-                    itemLabel = { it },
+                    selectedItem   = uiState.state.ifBlank { null },
+                    items          = ESTADOS,
+                    label          = "Estado",
+                    itemLabel      = { it },
                     onItemSelected = onStateChange
                 )
                 if (stateError) ValidationError("Selecciona un estado")
@@ -105,50 +104,50 @@ fun AddPropertyStep1Screen(
 
         Column {
             ViviaTextField(
-                value = uiState.neighborhood,
+                value         = uiState.neighborhood,
                 onValueChange = onNeighborhoodChange,
-                placeholder = "Escriba la colonia"
+                placeholder   = "Escriba la colonia"
             )
             if (neighborhoodError) ValidationError("Escribe la colonia")
         }
 
         SectionHeader(
-            icon = { Icon(Icons.Outlined.Home, contentDescription = null) },
+            icon  = { Icon(Icons.Outlined.Home, contentDescription = null) },
             title = "Tipo De Propiedad"
         )
 
         ViviaDropdown(
-            selectedItem = uiState.propertyType,
-            items = PropertyType.entries,
-            label = "Tipo de propiedad",
-            itemLabel = { it.label },
+            selectedItem   = uiState.propertyType,
+            items          = PropertyType.entries,
+            label          = "Tipo de propiedad",
+            itemLabel      = { it.label },
             onItemSelected = onPropertyTypeChange
         )
 
         SectionHeader(
-            icon = { Icon(Icons.Outlined.Sell, contentDescription = null) },
+            icon  = { Icon(Icons.Outlined.Sell, contentDescription = null) },
             title = if (uiState.listingType == ListingType.VENTA) "Precio Total" else "Renta Mensual"
         )
 
         Column {
             ViviaTextField(
-                value = uiState.price,
+                value         = uiState.price,
                 onValueChange = onPriceChange,
-                placeholder = "Escriba el precio"
+                placeholder   = "Escriba el precio"
             )
             if (priceError) ValidationError("Escribe el precio")
         }
 
         SectionHeader(
-            icon = { Icon(Icons.Outlined.Home, contentDescription = null) },
+            icon  = { Icon(Icons.Outlined.Home, contentDescription = null) },
             title = "Area Del Terreno"
         )
 
         Column {
             ViviaTextField(
-                value = uiState.landArea,
+                value         = uiState.landArea,
                 onValueChange = onLandAreaChange,
-                placeholder = "Escriba el área en m2"
+                placeholder   = "Escriba el área en m2"
             )
             if (landAreaError) ValidationError("Escribe el área del terreno")
         }
@@ -156,7 +155,7 @@ fun AddPropertyStep1Screen(
         Spacer(modifier = Modifier.height(8.dp))
 
         ViviaButton(
-            text = "Siguiente: Detalles De La Propiedad",
+            text    = "Siguiente: Detalles De La Propiedad",
             onClick = {
                 showErrors = true
                 val isValid = uiState.city.isNotBlank()
@@ -175,8 +174,8 @@ fun AddPropertyStep1Screen(
 @Composable
 private fun ValidationError(message: String) {
     Text(
-        text = "⚠ $message",
-        color = Color(0xFFB00020),
+        text     = "⚠ $message",
+        color    = Color(0xFFB00020),
         fontSize = 12.sp,
         modifier = Modifier.padding(start = 4.dp, top = 2.dp)
     )

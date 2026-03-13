@@ -27,7 +27,6 @@ fun AddPropertyScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
 
-    // Mostrar error en Snackbar (siempre visible, encima de todo)
     LaunchedEffect(uiState.error) {
         uiState.error?.let { msg ->
             snackbarHostState.showSnackbar(message = msg, duration = SnackbarDuration.Short)
@@ -35,7 +34,6 @@ fun AddPropertyScreen(
         }
     }
 
-    // Navegar al éxito
     LaunchedEffect(uiState.isSuccess) {
         if (uiState.isSuccess) {
             viewModel.clearSuccess()
@@ -69,7 +67,6 @@ fun AddPropertyScreen(
                 )
             )
         },
-        // SnackbarHost siempre se renderiza encima del contenido
         snackbarHost = {
             SnackbarHost(hostState = snackbarHostState) { data ->
                 Snackbar(
@@ -82,9 +79,10 @@ fun AddPropertyScreen(
         },
         containerColor = Color.White
     ) { innerPadding ->
-        Box(modifier = Modifier
-            .fillMaxSize()
-            .padding(innerPadding)
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
         ) {
             when (uiState.currentStep) {
                 1 -> AddPropertyStep1Screen(
@@ -110,13 +108,13 @@ fun AddPropertyScreen(
                     onBack                = viewModel::onBack
                 )
                 3 -> AddPropertyStep3Screen(
-                    uiState              = uiState,
-                    onImagesSelected     = viewModel::onImagesSelected,
-                    onRemoveImage        = viewModel::onRemoveImage,
-                    onSubmit             = viewModel::onSubmit,
-                    onBack               = viewModel::onBack,
-                    onPrepareCameraUri   = viewModel::prepareCameraUri,
-                    onPhotoCaptured      = viewModel::onPhotoCaptured
+                    uiState            = uiState,
+                    onImagesSelected   = viewModel::onImagesSelected,
+                    onRemoveImage      = viewModel::onRemoveImage,
+                    onSubmit           = viewModel::onSubmit,
+                    onBack             = viewModel::onBack,
+                    onPrepareCameraUri = viewModel::prepareCameraUri,
+                    onPhotoCaptured    = viewModel::onPhotoCaptured
                 )
             }
         }

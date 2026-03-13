@@ -17,11 +17,12 @@ class MyPropertiesRepositoryImpl @Inject constructor(
         return flowOf(
             listOf(
                 Property(
-                    id            = 1,
+                    id            = "1", // <-- ¡Corregido a String!
                     listingType   = ListingType.VENTA,
                     city          = "Mérida",
                     state         = "Yucatán",
                     neighborhood  = "Montejo",
+                    address       = "Calle 60 Norte", // <-- Agregado por el nuevo campo
                     propertyType  = PropertyType.CASAS,
                     price         = 2000000.0,
                     landArea      = 2000.0,
@@ -33,11 +34,12 @@ class MyPropertiesRepositoryImpl @Inject constructor(
                     imageUris     = emptyList()
                 ),
                 Property(
-                    id            = 2,
+                    id            = "2", // <-- ¡Corregido a String!
                     listingType   = ListingType.RENTA,
                     city          = "Mérida",
                     state         = "Yucatán",
                     neighborhood  = "Altabrisa",
+                    address       = "Avenida Altabrisa", // <-- Agregado por el nuevo campo
                     propertyType  = PropertyType.PISOS_DEPARTAMENTOS,
                     price         = 18000.0,
                     landArea      = 120.0,
@@ -49,11 +51,12 @@ class MyPropertiesRepositoryImpl @Inject constructor(
                     imageUris     = emptyList()
                 ),
                 Property(
-                    id            = 3,
+                    id            = "3", // <-- ¡Corregido a String!
                     listingType   = ListingType.VENTA,
                     city          = "Mérida",
                     state         = "Yucatán",
                     neighborhood  = "García Ginerés",
+                    address       = "Calle 17", // <-- Agregado por el nuevo campo
                     propertyType  = PropertyType.CASAS,
                     price         = 4000000.0,
                     landArea      = 500.0,

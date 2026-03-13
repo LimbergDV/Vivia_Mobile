@@ -5,6 +5,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.limbergdv.vivia_mobile.features.addProperty.presentation.screens.AddPropertyScreen
 import com.limbergdv.vivia_mobile.features.auth.presentation.screens.LoginLesseeScreen
 import com.limbergdv.vivia_mobile.features.auth.presentation.screens.LoginLessorScreen
 import com.limbergdv.vivia_mobile.features.follows.presentation.screens.FollowsScreen
@@ -17,12 +18,10 @@ import com.limbergdv.vivia_mobile.features.users.lessors.presentation.screens.Re
 fun ViviaAppNavigation(appNavigator: AppNavigatorImpl) {
     val navController = rememberNavController()
 
-    // Enlazamos el NavController de Compose con tu implementación inyectada
     LaunchedEffect(navController) {
         appNavigator.attach(navController)
     }
 
-    // Definimos el startDestination hacia nuestra vista de pruebas
     NavHost(
         navController = navController,
         startDestination = AppRoutes.HOME
@@ -39,7 +38,7 @@ fun ViviaAppNavigation(appNavigator: AppNavigatorImpl) {
             LessorOptionScreen(
                 onNavigateBack = { appNavigator.popBackStack() },
                 toLoginLessor = { appNavigator.navigate(AppRoutes.LOGIN_LESSOR) },
-                toRegisterLessor = { appNavigator.navigate(AppRoutes.REGISTER_LESSOR)}
+                toRegisterLessor = { appNavigator.navigate(AppRoutes.REGISTER_LESSOR) }
             )
         }
 
@@ -52,9 +51,7 @@ fun ViviaAppNavigation(appNavigator: AppNavigatorImpl) {
                     }
                 },
                 onNavigateNext = {
-                    // Cuando el registro sea exitoso, navegamos al home
                     appNavigator.navigate(AppRoutes.LOGIN_LESSOR) {
-                        // Evita que el usuario regrese al registro presionando "Atrás"
                         popUpTo(AppRoutes.REGISTER_LESSOR) { inclusive = true }
                     }
                 }
@@ -68,12 +65,10 @@ fun ViviaAppNavigation(appNavigator: AppNavigatorImpl) {
                         popUpTo(0) { inclusive = true }
                         launchSingleTop = true
                     }
-                                },
+                },
                 onNavigateNext = {
-                    // Cuando el registro sea exitoso, navegamos al home
                     appNavigator.navigate(AppRoutes.LOGIN_LESSEE) {
-                        // Evita que el usuario regrese al registro presionando "Atrás"
-                        popUpTo(AppRoutes.REGISTER_LESSOR) { inclusive = true }
+                        popUpTo(AppRoutes.REGISTER_LESSEE) { inclusive = true }
                     }
                 }
             )
@@ -82,7 +77,13 @@ fun ViviaAppNavigation(appNavigator: AppNavigatorImpl) {
         composable(AppRoutes.LOGIN_LESSOR) {
             LoginLessorScreen(
                 onNavigateToRegister = { appNavigator.navigate(AppRoutes.REGISTER_LESSOR) },
-                onNavigateNext = {}
+                onNavigateNext = {
+                    // ← antes estaba vacío, ahora navega a ADD_PROPERTY
+                    appNavigator.navigate(AppRoutes.ADD_PROPERTY) {
+                        popUpTo(0) { inclusive = true }
+                        launchSingleTop = true
+                    }
+                }
             )
         }
 
@@ -90,7 +91,6 @@ fun ViviaAppNavigation(appNavigator: AppNavigatorImpl) {
             LoginLesseeScreen(
                 onNavigateToRegister = { appNavigator.navigate(AppRoutes.REGISTER_LESSEE) },
                 onNavigateNext = {
-                    // Cambiamos HOME por FOLLOWS_LIST y limpiamos la pila
                     appNavigator.navigate(AppRoutes.FOLLOWS_LIST) {
                         popUpTo(0) { inclusive = true }
                         launchSingleTop = true
@@ -100,8 +100,17 @@ fun ViviaAppNavigation(appNavigator: AppNavigatorImpl) {
         }
 
         composable(AppRoutes.FOLLOWS_LIST) {
-            FollowsScreen()
+            FollowsScreen(
+                onAddPropertyClick = {
+                    appNavigator.navigate(AppRoutes.ADD_PROPERTY)
+                }
+            )
         }
 
+        composable(AppRoutes.ADD_PROPERTY) {
+            AddPropertyScreen(
+                onNavigateBack = { appNavigator.popBackStack() }
+            )
+        }
     }
 }
