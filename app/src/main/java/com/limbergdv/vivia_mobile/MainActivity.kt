@@ -9,8 +9,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.rememberNavController
+import com.limbergdv.vivia_mobile.core.navigation.FeatureNavGraph
+import com.limbergdv.vivia_mobile.core.navigation.LocalRootNavController
 import com.limbergdv.vivia_mobile.core.navigation.AppNavigatorImpl
 import com.limbergdv.vivia_mobile.core.navigation.ViviaAppNavigation
 import com.limbergdv.vivia_mobile.core.theme.AppTheme
@@ -21,12 +26,24 @@ import javax.inject.Inject
 class MainActivity : ComponentActivity() {
 
     @Inject
+    lateinit var navGraphs: Set<@JvmSuppressWildcards FeatureNavGraph>
+    @Inject
     lateinit var appNavigator: AppNavigatorImpl
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContent {
+            /*
+            val navController = rememberNavController()
+
+            NavHost(
+                navController    = navController,
+                startDestination = "my_properties_graph"
+            ) {
+                navGraphs.forEach { graph ->
+                    graph.register(this, navController)
+                }*/
+
             AppTheme {
                 ViviaAppNavigation(appNavigator)
             }
@@ -34,10 +51,3 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}

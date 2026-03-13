@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.devtools.ksp)
+    id("kotlin-parcelize")
     alias(libs.plugins.google.services)
 }
 
@@ -34,11 +35,17 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
     buildFeatures {
         compose = true
+    }
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21)
     }
 }
 
@@ -68,7 +75,11 @@ dependencies {
     ksp(libs.hilt.compiler)
     implementation(libs.com.squareup.retrofit2.retrofit)
     implementation(libs.com.squareup.retrofit2.converter.json)
-
+    implementation("androidx.compose.material:material-icons-extended:1.6.3")
+    implementation(libs.io.coil.kt.coil.compose)
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    ksp(libs.room.compiler)
     implementation(libs.androidx.credentials)
     implementation(libs.androidx.credentials.play.services.auth)
     implementation(platform(libs.firebase.bom))
