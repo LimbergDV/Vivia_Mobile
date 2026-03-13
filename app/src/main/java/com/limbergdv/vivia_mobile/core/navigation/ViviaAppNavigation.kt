@@ -10,8 +10,8 @@ import com.limbergdv.vivia_mobile.features.auth.presentation.screens.LoginLessor
 import com.limbergdv.vivia_mobile.features.follows.presentation.screens.FollowsScreen
 import com.limbergdv.vivia_mobile.features.home.presentation.screens.HomeScreen
 import com.limbergdv.vivia_mobile.features.home.presentation.screens.LessorOptionScreen
-import com.limbergdv.vivia_mobile.features.myProperties.presentation.screens.MyPropertiesScreen
-import com.limbergdv.vivia_mobile.features.myProperties.presentation.screens.PropertyDetailScreen
+import com.limbergdv.vivia_mobile.features.properties.remote.presentation.screens.MyPropertiesScreen
+import com.limbergdv.vivia_mobile.features.properties.remote.presentation.screens.PropertyDetailScreen
 import com.limbergdv.vivia_mobile.features.users.lessees.presentation.screens.RegisterLesseeScreen
 import com.limbergdv.vivia_mobile.features.users.lessors.presentation.screens.RegisterLessorScreen
 
@@ -113,7 +113,7 @@ fun ViviaAppNavigation(appNavigator: AppNavigatorImpl) {
         }
 
         composable(AppRoutes.MY_PROPERTIES) {
-            MyPropertiesScreen(
+            com.limbergdv.vivia_mobile.features.properties.remote.presentation.screens.MyPropertiesScreen(
                 onNavigate = { destination -> appNavigator.navigate(destination) },
                 onPropertyClick = { propertyId ->
                     // Navega a los detalles pasando el ID de la propiedad seleccionada
@@ -130,7 +130,7 @@ fun ViviaAppNavigation(appNavigator: AppNavigatorImpl) {
         composable("property_details/{propertyId}") { backStackEntry ->
             // La vista de detalles misma extraerá el ID mediante el SavedStateHandle de su ViewModel,
             // pero el Navigation Graph debe saber cómo recibir el argumento en la URL.
-            PropertyDetailScreen(
+            com.limbergdv.vivia_mobile.features.properties.remote.presentation.screens.PropertyDetailScreen(
                 onBack = {
                     appNavigator.popBackStack()
                 }
