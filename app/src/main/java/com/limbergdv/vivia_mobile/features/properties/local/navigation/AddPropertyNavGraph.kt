@@ -6,6 +6,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.limbergdv.vivia_mobile.core.navigation.FeatureNavGraph
 import com.limbergdv.vivia_mobile.features.properties.local.presentation.screens.AddPropertyScreen
+import com.limbergdv.vivia_mobile.features.properties.remote.navigation.MyPropertiesRoutes
 import javax.inject.Inject
 
 class AddPropertyNavGraph @Inject constructor() : FeatureNavGraph {
@@ -17,7 +18,12 @@ class AddPropertyNavGraph @Inject constructor() : FeatureNavGraph {
         ) {
             composable(AddPropertyRoutes.ADD_PROPERTY) {
                 AddPropertyScreen(
-                    onNavigateBack = { navController.popBackStack() }
+                    onNavigateBack = {
+                        // 2. Navegamos a My Properties y limpiamos la pila para forzar recarga
+                        navController.navigate(MyPropertiesRoutes.MY_PROPERTIES_LIST) {
+                            popUpTo(MyPropertiesRoutes.MY_PROPERTIES_LIST) { inclusive = true }
+                        }
+                    }
                 )
             }
         }
