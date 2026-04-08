@@ -7,6 +7,7 @@ fun LesseeRegisterVerifyResponseDto.toDomain(): Lessee {
     return Lessee(
         id = this.id,
         username = this.username,
-        email = this.email
+        email = this.email,
+        password = this.password
     )
 }

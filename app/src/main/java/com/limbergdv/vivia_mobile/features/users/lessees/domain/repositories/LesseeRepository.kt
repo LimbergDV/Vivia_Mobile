@@ -6,7 +6,8 @@ interface LesseeRepository {
 
     suspend fun getRegistrationChallenge(
         username: String,
-        email: String
+        email: String,
+        password: String
     ): Result<String>
 
     suspend fun verifyRegistration(

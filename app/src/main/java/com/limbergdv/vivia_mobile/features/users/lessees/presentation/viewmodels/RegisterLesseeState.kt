@@ -4,6 +4,7 @@ package com.limbergdv.vivia_mobile.features.users.lessees.presentation.viewmodel
 data class RegisterLesseeState(
     val username: String = "",
     val email: String = "",
+    val password: String = "",
     val isLoading: Boolean = false,
     val webAuthnChallenge: String? = null,
     val error: String? = null,
@@ -14,6 +15,8 @@ data class RegisterLesseeState(
 sealed class RegisterLesseeEvent {
     data class UsernameChanged(val username: String) : RegisterLesseeEvent()
     data class EmailChanged(val email: String) : RegisterLesseeEvent()
+
+    data class PasswordChanged(val password: String) : RegisterLesseeEvent()
     object RegisterClicked : RegisterLesseeEvent()
 
     // Resultados del hardware biométrico

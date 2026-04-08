@@ -9,7 +9,8 @@ data class BaseResponse<T>(
 
 data class LesseeRegisterChallengeRequestDto(
     val username: String,
-    val email: String
+    val email: String,
+    val password: String,
 )
 
 data class LesseeRegisterVerifyRequestDto(
@@ -20,5 +21,6 @@ data class LesseeRegisterVerifyRequestDto(
 data class LesseeRegisterVerifyResponseDto(
     val id: String,
     val username: String,
-    val email: String
+    val email: String,
+    val password: String
 )

@@ -14,12 +14,14 @@ class LesseeRepositoryImpl @Inject constructor(
 
     override suspend fun getRegistrationChallenge(
         username: String,
-        email: String
+        email: String,
+        password: String
     ): Result<String> {
         return try {
             val request = LesseeRegisterChallengeRequestDto(
                 username = username,
-                email = email
+                email = email,
+                password = password
             )
             val response = api.lesseeRegisterChallenge(request)
 

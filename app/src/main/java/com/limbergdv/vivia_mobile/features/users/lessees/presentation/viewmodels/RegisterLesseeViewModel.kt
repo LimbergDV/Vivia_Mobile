@@ -25,6 +25,7 @@ class RegisterLesseeViewModel @Inject constructor(
         when (event) {
             is RegisterLesseeEvent.UsernameChanged -> _state.update { it.copy(username = event.username) }
             is RegisterLesseeEvent.EmailChanged -> _state.update { it.copy(email = event.email) }
+            is RegisterLesseeEvent.PasswordChanged -> _state.update { it.copy(password = event.password) }
             is RegisterLesseeEvent.RegisterClicked -> getChallenge()
             is RegisterLesseeEvent.OnBiometricSuccess -> verifyRegistration(event.credentialResponseJson)
             is RegisterLesseeEvent.OnBiometricError -> _state.update { it.copy(isLoading = false, error = event.error) }
@@ -39,7 +40,8 @@ class RegisterLesseeViewModel @Inject constructor(
 
             val result = getChallengeUseCase(
                 username = _state.value.username,
-                email = _state.value.email
+                email = _state.value.email,
+                password = _state.value.password
             )
 
             result.fold(

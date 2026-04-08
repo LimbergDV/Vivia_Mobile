@@ -2,6 +2,7 @@ package com.limbergdv.vivia_mobile.features.users.lessors.presentation.component
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -10,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -19,7 +21,9 @@ fun ViviaTextField(
     placeholder: String,
     value: String,
     onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    visualTransformation: VisualTransformation = VisualTransformation.None,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
         Text(
@@ -48,6 +52,8 @@ fun ViviaTextField(
                 .height(56.dp),
             shape = RoundedCornerShape(16.dp),
             singleLine = true,
+            visualTransformation = visualTransformation,
+            keyboardOptions = keyboardOptions,
             colors = OutlinedTextFieldDefaults.colors(
                 unfocusedContainerColor = Color(0xFFEAEAEA),
                 focusedContainerColor = Color(0xFFEAEAEA),
