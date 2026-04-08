@@ -2,15 +2,25 @@ package com.limbergdv.vivia_mobile.features.auth.data.datasources.remote.dtos
 
 data class BaseResponse<T>(
     val success: Boolean,
-    val message: String?,
     val data: T?,
-    val status: String?
+    val message: String,
+    val status: String
 )
 
-data class AuthVerifyRequestDto(
+data class AuthTokenDto(
+    val accessToken: String,
+    val refreshToken: String
+)
+
+data class LoginRequestDto(
+    val identifier: String,
+    val password: String
+)
+
+data class RefreshTokenRequestDto(
+    val refreshToken: String
+)
+
+data class VerifyLoginRequestDto(
     val credentialResponseJson: String
-)
-
-data class AuthVerifyResponseDto(
-    val token: String
 )

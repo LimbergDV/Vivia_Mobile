@@ -1,9 +1,10 @@
 package com.limbergdv.vivia_mobile.features.auth.presentation.viewmodels
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.limbergdv.vivia_mobile.features.auth.domain.usecases.GetAuthChallengeUseCase
-import com.limbergdv.vivia_mobile.features.auth.domain.usecases.VerifyAuthVerifyUseCase
+import com.limbergdv.vivia_mobile.features.auth.domain.usecases.BiometricLoginUseCase
+import com.limbergdv.vivia_mobile.features.auth.domain.usecases.TraditionalLoginUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,56 +15,57 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginLessorViewModel @Inject constructor(
-    private val getChallengeUseCase: GetAuthChallengeUseCase,
-    private val verifyUseCase: VerifyAuthVerifyUseCase
+    private val traditionalLoginUseCase: TraditionalLoginUseCase,
+    private val biometricLoginUseCase: BiometricLoginUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(LoginLessorState())
     val state: StateFlow<LoginLessorState> = _state.asStateFlow()
 
+    private val _uiState = MutableStateFlow<AuthUiState>(AuthUiState.Idle)
+    val uiState: StateFlow<AuthUiState> = _uiState.asStateFlow()
+
     fun onEvent(event: LoginLessorEvent) {
         when (event) {
             is LoginLessorEvent.CompanyNameChanged -> _state.update { it.copy(companyName = event.companyName) }
-            is LoginLessorEvent.LoginClicked -> getChallenge()
-            is LoginLessorEvent.OnBiometricSuccess -> verifyLogin(event.credentialResponseJson)
-            is LoginLessorEvent.OnBiometricError -> _state.update { it.copy(isLoading = false, error = event.error) }
-            is LoginLessorEvent.ConsumeChallenge -> _state.update { it.copy(webAuthnChallenge = null) }
-            is LoginLessorEvent.ConsumeError -> _state.update { it.copy(error = null) }
+            is LoginLessorEvent.PasswordChanged -> _state.update { it.copy(password = event.password) }
+            is LoginLessorEvent.TraditionalLoginClicked -> loginTraditional()
+            is LoginLessorEvent.BiometricLoginClicked -> { /* This should call onBiometricLogin(context) from UI */ }
+            is LoginLessorEvent.ResetUiState -> _uiState.value = AuthUiState.Idle
         }
     }
 
-    private fun getChallenge() {
+    private fun loginTraditional() {
+        val companyName = _state.value.companyName
+        val password = _state.value.password
+
+        if (companyName.isBlank() || password.isBlank()) {
+            _uiState.value = AuthUiState.Error("Compañía y contraseña son requeridos")
+            return
+        }
+
         viewModelScope.launch {
-            _state.update { it.copy(isLoading = true, error = null) }
-
-            // 1. Validación del correo
-            if (_state.value.companyName.contains("@")) {
-                _state.update { it.copy(isLoading = false, error = "El nombre de la companía no es válido") }
-                return@launch // IMPORTANTE: Detiene la ejecución aquí si hay error
-            }
-
-            val result = getChallengeUseCase()
-            result.fold(
-                onSuccess = { challengeJson ->
-                    _state.update { it.copy(isLoading = false, webAuthnChallenge = challengeJson) }
+            _uiState.value = AuthUiState.Loading
+            traditionalLoginUseCase(companyName, password).fold(
+                onSuccess = {
+                    _uiState.value = AuthUiState.Success
                 },
-                onFailure = { exception ->
-                    _state.update { it.copy(isLoading = false, error = exception.message ?: "Error al obtener desafío") }
+                onFailure = { 
+                    _uiState.value = AuthUiState.Error(it.message ?: "Error al iniciar sesión")
                 }
             )
         }
     }
 
-    private fun verifyLogin(credentialResponseJson: String) {
+    fun onBiometricLogin(context: Context) {
         viewModelScope.launch {
-            _state.update { it.copy(isLoading = true, error = null) }
-            val result = verifyUseCase(credentialResponseJson)
-            result.fold(
+            _uiState.value = AuthUiState.Loading
+            biometricLoginUseCase(context).fold(
                 onSuccess = {
-                    _state.update { it.copy(isLoading = false, isLoginSuccessful = true) }
+                    _uiState.value = AuthUiState.Success
                 },
-                onFailure = { exception ->
-                    _state.update { it.copy(isLoading = false, error = exception.message ?: "Error al iniciar sesión") }
+                onFailure = {
+                    _uiState.value = AuthUiState.Error(it.message ?: "Error en la autenticación biométrica")
                 }
             )
         }

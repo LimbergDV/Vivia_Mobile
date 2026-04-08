@@ -1,9 +1,10 @@
 package com.limbergdv.vivia_mobile.features.users.lessors.presentation.viewmodels
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.limbergdv.vivia_mobile.features.users.lessors.domain.usecases.GetLessorRegisterChallengeUseCase
-import com.limbergdv.vivia_mobile.features.users.lessors.domain.usecases.VerifyLessorRegistrationUseCase
+import com.limbergdv.vivia_mobile.features.auth.presentation.viewmodels.AuthUiState
+import com.limbergdv.vivia_mobile.features.users.lessors.domain.usecases.RegisterLessorUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,63 +15,50 @@ import javax.inject.Inject
 
 @HiltViewModel
 class RegisterLessorViewModel @Inject constructor(
-    private val getChallengeUseCase: GetLessorRegisterChallengeUseCase,
-    private val verifyRegistrationUseCase: VerifyLessorRegistrationUseCase
+    private val registerLessorUseCase: RegisterLessorUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(RegisterLessorState())
     val state: StateFlow<RegisterLessorState> = _state.asStateFlow()
+
+    private val _uiState = MutableStateFlow<AuthUiState>(AuthUiState.Idle)
+    val uiState: StateFlow<AuthUiState> = _uiState.asStateFlow()
 
     fun onEvent(event: RegisterLessorEvent) {
         when (event) {
             is RegisterLessorEvent.FirstNameChanged -> _state.update { it.copy(firstName = event.firstName) }
             is RegisterLessorEvent.LastNameChanged -> _state.update { it.copy(lastName = event.lastName) }
             is RegisterLessorEvent.CompanyNameChanged -> _state.update { it.copy(companyName = event.companyName) }
-            is RegisterLessorEvent.RegisterClicked -> getChallenge()
-            is RegisterLessorEvent.OnBiometricSuccess -> verifyRegistration(event.credentialResponseJson)
-            is RegisterLessorEvent.OnBiometricError -> _state.update { it.copy(isLoading = false, error = event.error) }
-            is RegisterLessorEvent.ConsumeChallenge -> _state.update { it.copy(webAuthnChallenge = null) }
-            is RegisterLessorEvent.ConsumeError -> _state.update { it.copy(error = null) }
+            is RegisterLessorEvent.PasswordChanged -> _state.update { it.copy(password = event.password) }
+            is RegisterLessorEvent.PhoneNumberChanged -> _state.update { it.copy(phoneNumber = event.phoneNumber) }
+            is RegisterLessorEvent.RegisterClicked -> { /* call onRegister(context) from UI */ }
+            is RegisterLessorEvent.ResetUiState -> _uiState.value = AuthUiState.Idle
         }
     }
 
-    private fun getChallenge() {
-        viewModelScope.launch {
-            _state.update { it.copy(isLoading = true, error = null) }
-
-            val result = getChallengeUseCase(
-                firstName = _state.value.firstName,
-                lastName = _state.value.lastName,
-                companyName = _state.value.companyName
-            )
-
-            result.fold(
-                onSuccess = { challengeJson ->
-                    // Exponemos el desafío; la vista lo observará y abrirá el lector de huellas
-                    _state.update { it.copy(isLoading = false, webAuthnChallenge = challengeJson) }
-                },
-                onFailure = { exception ->
-                    _state.update { it.copy(isLoading = false, error = exception.message ?: "Error al obtener desafío") }
-                }
-            )
+    fun onRegister(context: Context) {
+        val s = _state.value
+        if (s.firstName.isBlank() || s.lastName.isBlank() || s.companyName.isBlank() || 
+            s.password.isBlank() || s.phoneNumber.isBlank()) {
+            _uiState.value = AuthUiState.Error("Todos los campos son obligatorios")
+            return
         }
-    }
 
-    private fun verifyRegistration(credentialResponseJson: String) {
         viewModelScope.launch {
-            _state.update { it.copy(isLoading = true, error = null) }
-
-            val result = verifyRegistrationUseCase(
-                companyName = _state.value.companyName,
-                credentialResponseJson = credentialResponseJson
-            )
-
-            result.fold(
+            _uiState.value = AuthUiState.Loading
+            registerLessorUseCase(
+                context = context,
+                firstName = s.firstName,
+                lastName = s.lastName,
+                companyName = s.companyName,
+                password = s.password,
+                phoneNumber = s.phoneNumber
+            ).fold(
                 onSuccess = {
-                    _state.update { it.copy(isLoading = false, isRegistrationSuccessful = true) }
+                    _uiState.value = AuthUiState.Success
                 },
-                onFailure = { exception ->
-                    _state.update { it.copy(isLoading = false, error = exception.message ?: "Error al verificar registro") }
+                onFailure = {
+                    _uiState.value = AuthUiState.Error(it.message ?: "Error al registrar")
                 }
             )
         }

@@ -7,11 +7,7 @@ import javax.inject.Inject
 class VerifyAuthVerifyUseCase @Inject constructor(
     private val repository: AuthRepository,
 ) {
-    suspend operator fun invoke( credentialResponseJson: String) : Result<AuthToken> {
-        return try {
-            repository.verifyRegistration(credentialResponseJson)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+    suspend operator fun invoke(credentialResponseJson: String): Result<AuthToken> {
+        return repository.verifyLogin(credentialResponseJson)
     }
 }
