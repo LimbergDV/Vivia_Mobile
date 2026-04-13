@@ -1,7 +1,9 @@
 package com.limbergdv.vivia_mobile.features.follows.presentation.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.limbergdv.vivia_mobile.features.auth.domain.usecases.LogoutUseCase
 import com.limbergdv.vivia_mobile.features.users.lessees.domain.usecases.FollowLessorUseCase
 import com.limbergdv.vivia_mobile.features.users.lessors.domain.usecases.GetAllLessorsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,7 +17,8 @@ import javax.inject.Inject
 @HiltViewModel
 class FollowsViewModel @Inject constructor(
     private val getAllLessorsUseCase: GetAllLessorsUseCase,
-    private val followLessorUseCase: FollowLessorUseCase
+    private val followLessorUseCase: FollowLessorUseCase,
+    private val logoutUseCase: LogoutUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(FollowsState())
@@ -31,6 +34,7 @@ class FollowsViewModel @Inject constructor(
             is FollowsEvent.LoadLessors -> loadLessors()
             is FollowsEvent.OnFollowClicked -> followLessor(event.companyName)
             is FollowsEvent.ConsumeError -> _state.update { it.copy(error = null) }
+            is FollowsEvent.Logout -> logout(event.onLogoutComplete)
         }
     }
 
@@ -64,6 +68,24 @@ class FollowsViewModel @Inject constructor(
                         error = "No se pudo seguir a $companyName"
                     )
                 }
+            }
+        }
+    }
+
+    private fun logout(onLogoutComplete: () -> Unit) {
+        viewModelScope.launch {
+            Log.d("FollowsVM", "Cerrando sesión...")
+            _state.update { it.copy(isLoading = true) }
+
+            val result = logoutUseCase.invoke()
+
+            if (result.isSuccess) {
+                Log.d("FollowsVM", "Sesión cerrada exitosamente")
+                onLogoutComplete()
+            } else {
+                val errorMsg = result.exceptionOrNull()?.message ?: "Error al cerrar sesión"
+                Log.e("FollowsVM", "Error al cerrar sesión: $errorMsg")
+                _state.update { it.copy(error = errorMsg, isLoading = false) }
             }
         }
     }

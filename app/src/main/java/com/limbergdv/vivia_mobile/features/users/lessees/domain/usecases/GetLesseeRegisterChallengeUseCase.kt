@@ -8,14 +8,15 @@ class GetLesseeRegisterChallengeUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(
         username: String,
-        email: String
+        email: String,
+        password: String,
     ): Result<String> {
         return try {
             if (username.isBlank() || email.isBlank()) {
                 return Result.failure(Exception("Todos los campos son obligatorios"))
             }
 
-            repository.getRegistrationChallenge(username, email)
+            repository.getRegistrationChallenge(username, email, password)
         } catch (e: Exception) {
             Result.failure(e)
         }

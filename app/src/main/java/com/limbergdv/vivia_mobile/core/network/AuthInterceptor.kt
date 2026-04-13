@@ -5,14 +5,13 @@ import javax.inject.Inject
 import okhttp3.Interceptor
 import okhttp3.Response
 
-
-class AuthInterceptor @Inject constructor (
+class AuthInterceptor @Inject constructor(
     private val tokenDataStore: TokenDataStore
 ) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val originalRequest = chain.request()
-        val token = tokenDataStore.getToken()
-        android.util.Log.d("VIVIA_TOKEN_DEBUG", "Token en interceptor: $token")
+        val token = tokenDataStore.getAccessToken()
+
         // Si no hay token, hacemos la petición normal (ej. Login/Register)
         if (token == null) {
             return chain.proceed(originalRequest)
@@ -20,7 +19,7 @@ class AuthInterceptor @Inject constructor (
 
         // Si hay token, creamos una nueva petición con el header
         val newRequest = originalRequest.newBuilder()
-            .addHeader("Authorization", "Bearer $token")
+            .header("Authorization", "Bearer $token")
             .build()
 
         return chain.proceed(newRequest)

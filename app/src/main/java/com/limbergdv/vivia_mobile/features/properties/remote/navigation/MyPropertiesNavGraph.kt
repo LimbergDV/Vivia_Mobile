@@ -26,6 +26,10 @@ class MyPropertiesNavGraph @Inject constructor() : FeatureNavGraph {
                 MyPropertiesInternalNavHost(
                     onAddPropertyClick = {
                         navController.navigate(AddPropertyRoutes.ADD_PROPERTY_GRAPH)
+                    },
+                    onLogout = {
+                        // No hacemos nada aquí, el MainActivity manejará la navegación
+                        // al observar el cambio en TokenDataStore
                     }
                 )
             }
@@ -35,7 +39,8 @@ class MyPropertiesNavGraph @Inject constructor() : FeatureNavGraph {
 
 @Composable
 private fun MyPropertiesInternalNavHost(
-    onAddPropertyClick: () -> Unit
+    onAddPropertyClick: () -> Unit,
+    onLogout: () -> Unit = {}
 ) {
     val internalNavController = rememberNavController()
 
@@ -53,7 +58,8 @@ private fun MyPropertiesInternalNavHost(
                     )
                 },
                 onAddPropertyClick = onAddPropertyClick,
-                onNavigate = { /* TODO: tabs */ }
+                onNavigate = { /* TODO: tabs */ },
+                onLogout = onLogout
             )
         }
 

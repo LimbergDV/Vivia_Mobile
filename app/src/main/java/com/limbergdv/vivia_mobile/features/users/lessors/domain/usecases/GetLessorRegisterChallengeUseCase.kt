@@ -9,13 +9,16 @@ class GetLessorRegisterChallengeUseCase @Inject constructor(
     suspend operator fun invoke(
         firstName: String,
         lastName: String,
-        companyName: String
+        companyName: String,
+        password: String,
+        phoneNumber: String
     ): Result<String> {
         return try {
             if (firstName.isBlank() || lastName.isBlank() || companyName.isBlank()) {
                 return Result.failure(Exception("Todos los campos son obligatorios"))
             }
-            repository.getRegistrationChallenge(firstName, lastName, companyName)
+
+            repository.getRegistrationChallenge(firstName, lastName, companyName, password, phoneNumber)
         } catch (e: Exception) {
             Result.failure(e)
         }

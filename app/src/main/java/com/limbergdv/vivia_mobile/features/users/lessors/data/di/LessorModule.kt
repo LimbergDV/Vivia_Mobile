@@ -1,7 +1,7 @@
 package com.limbergdv.vivia_mobile.features.users.lessors.data.di
 
 import com.limbergdv.vivia_mobile.features.users.lessors.data.datasources.remote.api.LessorApi
-import com.limbergdv.vivia_mobile.features.users.lessors.data.respositories.LessorRepositoryImpl
+import com.limbergdv.vivia_mobile.features.users.lessors.data.repositories.LessorRepositoryImpl
 import com.limbergdv.vivia_mobile.features.users.lessors.domain.repositories.LessorRepository
 import dagger.Binds
 import dagger.Module
@@ -13,7 +13,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object RepositoryModule {
+object LessorApiModule {
 
     @Provides
     @Singleton

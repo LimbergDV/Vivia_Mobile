@@ -3,6 +3,7 @@ package com.limbergdv.vivia_mobile.features.properties.remote.presentation.viewm
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.limbergdv.vivia_mobile.features.auth.domain.usecases.LogoutUseCase
 import com.limbergdv.vivia_mobile.features.properties.remote.domain.usecases.ObserveMyPropertiesUseCase
 import com.limbergdv.vivia_mobile.features.properties.remote.domain.usecases.SyncMyPropertiesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,7 +19,8 @@ import javax.inject.Inject
 @HiltViewModel
 class MyPropertiesViewModel @Inject constructor(
     private val observeMyPropertiesUseCase: ObserveMyPropertiesUseCase,
-    private val syncMyPropertiesUseCase: SyncMyPropertiesUseCase
+    private val syncMyPropertiesUseCase: SyncMyPropertiesUseCase,
+    private val logoutUseCase: LogoutUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(MyPropertiesUiState())
@@ -61,5 +63,23 @@ class MyPropertiesViewModel @Inject constructor(
 
     fun clearErrorMessage() {
         _uiState.update { it.copy(errorMessage = null) }
+    }
+
+    fun logout(onLogoutComplete: () -> Unit) {
+        viewModelScope.launch {
+            Log.d("MyPropertiesVM", "Cerrando sesión...")
+            _uiState.update { it.copy(isSyncing = true) }
+
+            val result = logoutUseCase.invoke()
+
+            if (result.isSuccess) {
+                Log.d("MyPropertiesVM", "Sesión cerrada exitosamente")
+                onLogoutComplete()
+            } else {
+                val errorMsg = result.exceptionOrNull()?.message ?: "Error al cerrar sesión"
+                Log.e("MyPropertiesVM", "Error al cerrar sesión: $errorMsg")
+                _uiState.update { it.copy(errorMessage = errorMsg, isSyncing = false) }
+            }
+        }
     }
 }
