@@ -5,7 +5,6 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.util.Log
-import com.google.gson.Gson
 import com.limbergdv.vivia_mobile.core.database.dao.PropertyDraftDao
 import com.limbergdv.vivia_mobile.features.properties.local.data.datasources.local.mapper.toDraftEntity
 import com.limbergdv.vivia_mobile.features.properties.local.data.datasources.local.mapper.toUiState
@@ -30,8 +29,6 @@ class AddPropertyRepositoryImpl @Inject constructor(
     @ApplicationContext private val context: Context
 ) : AddPropertyRepository {
 
-    private val gson = Gson()
-
     // ── Borrador local (Room) ─────────────────────────────────────────────────
 
     override fun getDraft(): Flow<AddPropertyUiState?> =
@@ -48,33 +45,66 @@ class AddPropertyRepositoryImpl @Inject constructor(
     // ── Publicación remota ────────────────────────────────────────────────────
 
     override suspend fun createProperty(property: Property): Property {
-        val propertyRequest = property.toRequest()
-        val propertyJson = gson.toJson(propertyRequest)
-        Log.d("VIVIA_PROPERTY_DEBUG", "Property JSON: $propertyJson")
 
-        val propertyBody = propertyJson
-            .toRequestBody("application/json".toMediaTypeOrNull())
+        // ── Paso 1: Crear propiedad con JSON puro ─────────────────────────────
+        Log.d("VIVIA_PROPERTY_DEBUG", "=== Paso 1: Enviando JSON a POST /properties ===")
 
-        val imageParts: List<MultipartBody.Part> = property.imageUris.mapNotNull { uriString ->
-            uriToMultipart(uriString)
-        }
-        Log.d("VIVIA_PROPERTY_DEBUG", "Imágenes a subir: ${imageParts.size}")
+        val request = property.toRequest()
+        Log.d("VIVIA_PROPERTY_DEBUG", "Request: $request")
 
-        val response = if (imageParts.isNotEmpty()) {
-            api.createProperty(request = propertyBody, images = imageParts)
-        } else {
-            api.createPropertyWithoutImages(request = propertyBody)
+        val createResponse = api.createProperty(request)
+        Log.d("VIVIA_PROPERTY_DEBUG", "Response success: ${createResponse.success}")
+        Log.d("VIVIA_PROPERTY_DEBUG", "Response message: ${createResponse.message}")
+
+        if (!createResponse.success || createResponse.data == null) {
+            throw Exception(createResponse.message ?: "Error al crear la propiedad")
         }
 
-        Log.d("VIVIA_PROPERTY_DEBUG", "Response success: ${response.success}")
-        Log.d("VIVIA_PROPERTY_DEBUG", "Response message: ${response.message}")
-        Log.d("VIVIA_PROPERTY_DEBUG", "Response data id: ${response.data?.id}")
+        val createdProperty = createResponse.data.toDomain()
+        val propertyId = createdProperty.id
 
-        if (!response.success || response.data == null) {
-            throw Exception(response.message ?: "Error al crear la propiedad")
+        Log.d("VIVIA_PROPERTY_DEBUG", "Propiedad creada con id: '$propertyId'")
+        Log.d("VIVIA_PROPERTY_DEBUG", "¿propertyId está en blanco? ${propertyId.isBlank()}")
+
+        // ── Paso 2: Subir imágenes si las hay ────────────────────────────────
+        if (property.imageUris.isNotEmpty() && propertyId.isNotBlank()) {
+            Log.d("VIVIA_PROPERTY_DEBUG", "=== Paso 2: Subiendo ${property.imageUris.size} imágenes a /properties/$propertyId/images ===")
+
+            val imageParts = property.imageUris.mapNotNull { uriString ->
+                uriToMultipart(uriString)
+            }
+
+            Log.d("VIVIA_PROPERTY_DEBUG", "Parts generados: ${imageParts.size}")
+
+            if (imageParts.isNotEmpty()) {
+                val imageResponse = api.uploadImages(
+                    propertyId = propertyId,
+                    images     = imageParts
+                )
+
+                Log.d("VIVIA_PROPERTY_DEBUG", "HTTP code: ${imageResponse.code()}")
+
+                if (imageResponse.isSuccessful) {
+                    val body = imageResponse.body()
+                    Log.d("VIVIA_PROPERTY_DEBUG", "Imágenes subidas exitosamente: ${body?.success}")
+                    Log.d("VIVIA_PROPERTY_DEBUG", "Message: ${body?.message}")
+
+                    if (body?.success == true && body.data != null) {
+                        return body.data.toDomain()
+                    }
+                } else {
+                    // ── Logs detallados para diagnosticar el 403 ─────────────
+                    val errorBody = imageResponse.errorBody()?.string()
+                    Log.e("VIVIA_PROPERTY_DEBUG", "Error HTTP ${imageResponse.code()} subiendo imágenes")
+                    Log.e("VIVIA_PROPERTY_DEBUG", "Error body: $errorBody")
+                    Log.e("VIVIA_PROPERTY_DEBUG", "URL llamada: ${imageResponse.raw().request.url}")
+                    Log.e("VIVIA_PROPERTY_DEBUG", "Headers enviados: ${imageResponse.raw().request.headers}")
+                    Log.e("VIVIA_PROPERTY_DEBUG", "Response headers: ${imageResponse.headers()}")
+                }
+            }
         }
 
-        return response.data.toDomain()
+        return createdProperty
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────────
@@ -86,13 +116,10 @@ class AddPropertyRepositoryImpl @Inject constructor(
             val originalBytes = stream.readBytes()
             stream.close()
 
-            val originalSizeKb = originalBytes.size / 1024
-            Log.d("VIVIA_PROPERTY_DEBUG", "Imagen original: ${originalSizeKb}KB")
+            Log.d("VIVIA_PROPERTY_DEBUG", "Imagen original: ${originalBytes.size / 1024}KB")
 
-            // Comprimir la imagen
             val compressedBytes = compressImage(originalBytes)
-            val compressedSizeKb = compressedBytes.size / 1024
-            Log.d("VIVIA_PROPERTY_DEBUG", "Imagen comprimida: ${compressedSizeKb}KB")
+            Log.d("VIVIA_PROPERTY_DEBUG", "Imagen comprimida: ${compressedBytes.size / 1024}KB")
 
             val fileName = "photo_${System.currentTimeMillis()}.jpg"
             val requestBody = compressedBytes.toRequestBody("image/jpeg".toMediaTypeOrNull())
@@ -104,42 +131,29 @@ class AddPropertyRepositoryImpl @Inject constructor(
         }
     }
 
-    /**
-     * Comprime la imagen progresivamente hasta que pese menos de MAX_SIZE_KB.
-     * Primero reduce dimensiones si es muy grande, luego baja calidad JPEG.
-     */
     private fun compressImage(bytes: ByteArray): ByteArray {
-        val MAX_SIZE_KB   = 500   // límite por imagen en KB
-        val MAX_DIMENSION = 1280  // máximo ancho o alto en píxeles
+        val MAX_SIZE_KB   = 500
+        val MAX_DIMENSION = 1280
 
-        // 1. Decodificar el bitmap original
         var bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
             ?: return bytes
 
-        // 2. Redimensionar si alguna dimensión supera MAX_DIMENSION
         val width  = bitmap.width
         val height = bitmap.height
 
         if (width > MAX_DIMENSION || height > MAX_DIMENSION) {
-            val ratio = minOf(
-                MAX_DIMENSION.toFloat() / width,
-                MAX_DIMENSION.toFloat() / height
-            )
+            val ratio     = minOf(MAX_DIMENSION.toFloat() / width, MAX_DIMENSION.toFloat() / height)
             val newWidth  = (width * ratio).toInt()
             val newHeight = (height * ratio).toInt()
             bitmap = Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, true)
-            Log.d("VIVIA_PROPERTY_DEBUG", "Redimensionado a ${newWidth}x${newHeight}")
         }
 
-        // 3. Comprimir bajando calidad progresivamente hasta cumplir MAX_SIZE_KB
         var quality = 85
         var output: ByteArrayOutputStream
-
         do {
             output = ByteArrayOutputStream()
             bitmap.compress(Bitmap.CompressFormat.JPEG, quality, output)
             quality -= 10
-            Log.d("VIVIA_PROPERTY_DEBUG", "Comprimiendo con quality=$quality, size=${output.size() / 1024}KB")
         } while (output.size() > MAX_SIZE_KB * 1024 && quality > 10)
 
         return output.toByteArray()

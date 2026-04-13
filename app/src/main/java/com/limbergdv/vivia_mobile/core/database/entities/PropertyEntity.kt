@@ -1,5 +1,6 @@
 package com.limbergdv.vivia_mobile.core.database.entities
 
+import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -10,10 +11,8 @@ data class PropertyEntity(
     val title: String,
     val description: String,
     val price: Double,
-    val address: String,
-    val city: String,
-    val state: String,
-    val neighborhood: String,
+    @Embedded(prefix = "addr_")
+    val address: AddressEntity,
     val departmentType: String,
     val area: Double,
     val roomsNumber: Int,
@@ -21,4 +20,11 @@ data class PropertyEntity(
     val parkingNumber: Int,
     val lessorId: String,
     val imageUrls: List<String>
+)
+
+data class AddressEntity(
+    val address: String,
+    val city: String,
+    val state: String,
+    val neighborhood: String
 )

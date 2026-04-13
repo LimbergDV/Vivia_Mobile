@@ -10,7 +10,6 @@ import com.limbergdv.vivia_mobile.features.properties.remote.domain.repositories
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
-import kotlin.collections.map
 
 class MyPropertiesRepositoryImpl @Inject constructor(
     private val propertyDao: PropertyDao,
@@ -29,27 +28,32 @@ class MyPropertiesRepositoryImpl @Inject constructor(
 
     override suspend fun syncMyProperties(): Result<Unit> {
         return try {
-            Log.d("SyncProperties", "1. Iniciando petición HTTP a la API...")
+            Log.d("SyncProperties", "Iniciando GET /properties/lessor...")
             val response = myPropertiesApi.getPropertiesByLessor()
 
             if (response.isSuccessful) {
-                // 3. Extraemos el campo 'data' del wrapper
-                val dtos = response.body()?.data ?: emptyList()
-                Log.d("SyncProperties", "2. Petición HTTP exitosa. Propiedades recibidas: ${dtos.size}")
+                val wrapper = response.body()
+
+                if (wrapper?.success != true || wrapper.data == null) {
+                    Log.e("SyncProperties", "Respuesta inválida: ${wrapper?.message}")
+                    return Result.failure(Exception(wrapper?.message ?: "Respuesta vacía"))
+                }
+
+                val dtos = wrapper.data
+                Log.d("SyncProperties", "Propiedades recibidas: ${dtos.size}")
 
                 val entities = dtos.map { it.toEntity() }
                 propertyDao.insertAll(entities)
-                Log.d("SyncProperties", "3. Propiedades guardadas en Room correctamente.")
+                Log.d("SyncProperties", "Propiedades guardadas en Room: ${entities.size}")
 
                 Result.success(Unit)
             } else {
                 val errorBody = response.errorBody()?.string()
                 Log.e("SyncProperties", "Error HTTP ${response.code()}: $errorBody")
-                Result.failure(Exception("Error en la petición: ${response.code()}"))
+                Result.failure(Exception("Error ${response.code()}: $errorBody"))
             }
         } catch (e: Exception) {
-            // Aquí es donde estaba ocurriendo tu error silencioso
-            Log.e("SyncProperties", "Excepción crítica al sincronizar: ${e.message}", e)
+            Log.e("SyncProperties", "Excepción al sincronizar: ${e.message}", e)
             Result.failure(e)
         }
     }

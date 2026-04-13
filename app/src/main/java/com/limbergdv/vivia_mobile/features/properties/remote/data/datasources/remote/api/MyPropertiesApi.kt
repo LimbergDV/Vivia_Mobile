@@ -5,6 +5,6 @@ import retrofit2.Response
 import retrofit2.http.GET
 
 interface MyPropertiesApi {
-    @GET("/properties/lessor")
+    @GET("properties/lessor")
     suspend fun getPropertiesByLessor(): Response<PropertyListWrapper>
 }
