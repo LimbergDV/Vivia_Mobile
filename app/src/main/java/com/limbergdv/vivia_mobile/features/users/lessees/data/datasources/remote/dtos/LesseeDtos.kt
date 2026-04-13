@@ -16,3 +16,16 @@ data class LesseeRegistrationResponseDto(
     val username: String,
     val email: String
 )
+
+data class LessorInfoDto(
+    val id: String?,
+    val firstName: String?,
+    val lastName: String?,
+    val companyName: String?,
+    val phoneNumber: String?
+)
+
+data class LessorWithFollowStatusDto(
+    val lessor: LessorInfoDto?,
+    val following: Boolean?
+)

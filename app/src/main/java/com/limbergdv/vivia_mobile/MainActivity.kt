@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.Color
 import com.limbergdv.vivia_mobile.core.navigation.AppNavigatorImpl
 import com.limbergdv.vivia_mobile.core.navigation.AppRoutes
 import com.limbergdv.vivia_mobile.core.navigation.ViviaAppNavigation
+import com.limbergdv.vivia_mobile.core.session.TokenDataStore
 import com.limbergdv.vivia_mobile.core.theme.AppTheme
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -48,7 +49,8 @@ class MainActivity : ComponentActivity() {
                     is AuthState.Authenticated -> {
                         ViviaAppNavigation(
                             appNavigator = appNavigator,
-                            startDestination = AppRoutes.HOME_GRAPH
+                            startDestination = AppRoutes.HOME_GRAPH,
+                            userType = (authState as AuthState.Authenticated).userType
                         )
                     }
                     is AuthState.Unauthenticated -> {

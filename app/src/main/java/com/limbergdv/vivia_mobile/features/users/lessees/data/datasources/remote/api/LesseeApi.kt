@@ -2,10 +2,12 @@ package com.limbergdv.vivia_mobile.features.users.lessees.data.datasources.remot
 
 import com.limbergdv.vivia_mobile.features.auth.data.datasources.remote.dtos.BaseResponse
 import com.limbergdv.vivia_mobile.features.users.lessees.data.datasources.remote.dtos.LesseeRegistrationResponseDto
+import com.limbergdv.vivia_mobile.features.users.lessees.data.datasources.remote.dtos.LessorWithFollowStatusDto
 import com.limbergdv.vivia_mobile.features.users.lessees.data.datasources.remote.dtos.RegisterLesseeChallengeDto
 import com.limbergdv.vivia_mobile.features.users.lessees.data.datasources.remote.dtos.VerifyLesseeRegistrationDto
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
@@ -23,4 +25,7 @@ interface LesseeApi {
 
     @POST("/lessees/me/follow/{companyName}")
     suspend fun followLessor(@Path("companyName") companyName: String): Response<BaseResponse<String>>
+
+    @GET("/lessees/follows")
+    suspend fun getLessorsWithFollowStatus(): Response<BaseResponse<List<LessorWithFollowStatusDto>>>
 }

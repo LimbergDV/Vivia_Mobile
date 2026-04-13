@@ -1,5 +1,6 @@
 package com.limbergdv.vivia_mobile.features.users.lessors.data.repositories
 
+import android.util.Log
 import com.limbergdv.vivia_mobile.features.users.lessors.data.datasources.remote.api.LessorApi
 import com.limbergdv.vivia_mobile.features.users.lessors.data.datasources.remote.dtos.RegisterLessorChallengeDto
 import com.limbergdv.vivia_mobile.features.users.lessors.data.datasources.remote.dtos.VerifyLessorRegistrationDto
@@ -29,16 +30,31 @@ class LessorRepositoryImpl @Inject constructor(
                 password = password,
                 phoneNumber = phoneNumber
             )
+
+            Log.d("LessorRepo", "📤 REQUEST DTO CREADO:")
+            Log.d("LessorRepo", "  request.firstName = '${request.firstName}'")
+            Log.d("LessorRepo", "  request.lastName = '${request.lastName}'")
+            Log.d("LessorRepo", "  request.companyName = '${request.companyName}'")
+            Log.d("LessorRepo", "  request.password = '${request.password}'")
+            Log.d("LessorRepo", "  request.phoneNumber = '${request.phoneNumber}' (length: ${request.phoneNumber.length})")
+            Log.d("LessorRepo", "📤 Enviando petición a /lessors/register/challenge...")
+
             val response = api.getRegistrationChallenge(request)
 
             if (response.isSuccessful) {
                 val body = response.body()
+                Log.d("LessorRepo", "📥 RESPUESTA RECIBIDA (HTTP ${response.code()})")
+                Log.d("LessorRepo", "  success: ${body?.success}")
+                Log.d("LessorRepo", "  message: ${body?.message}")
+                Log.d("LessorRepo", "  data exists: ${body?.data != null}")
+
                 if (body?.success == true && body.data != null) {
                     Result.success(body.data)
                 } else {
                     Result.failure(Exception(body?.message ?: "Error al obtener el desafío biométrico"))
                 }
             } else {
+                Log.e("LessorRepo", "❌ Error HTTP ${response.code()}")
                 Result.failure(Exception("Error en la conexión con el servidor (HTTP ${response.code()})"))
             }
         } catch (e: IOException) {

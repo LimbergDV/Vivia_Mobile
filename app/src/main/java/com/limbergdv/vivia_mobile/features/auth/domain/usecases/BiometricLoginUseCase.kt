@@ -11,7 +11,7 @@ class BiometricLoginUseCase @Inject constructor(
     private val biometricService: BiometricService,
     private val tokenDataStore: TokenDataStore
 ) {
-    suspend operator fun invoke(context: Context): Result<Unit> {
+    suspend operator fun invoke(context: Context, userType: TokenDataStore.UserType): Result<Unit> {
         // 1. Obtener desafío del servidor
         val challengeResult = repository.getLoginChallenge()
         val challengeJson = challengeResult.getOrElse { return Result.failure(it) }
@@ -22,14 +22,18 @@ class BiometricLoginUseCase @Inject constructor(
 
         // 3. Verificar en el servidor
         val verifyResult = repository.verifyLogin(credentialResponseJson)
-        
+
         return verifyResult.fold(
             onSuccess = { authToken ->
-                // 4. Guardar tokens si todo es correcto
-                tokenDataStore.saveTokens(authToken.accessToken, authToken.refreshToken)
+                // 4. Guardar tokens con el tipo de usuario
+                tokenDataStore.saveTokens(
+                    accessToken = authToken.accessToken,
+                    refreshToken = authToken.refreshToken,
+                    userType = userType
+                )
                 Result.success(Unit)
             },
-            onFailure = { 
+            onFailure = {
                 Result.failure(it)
             }
         )

@@ -5,8 +5,9 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.messaging.FirebaseMessaging
+import com.limbergdv.vivia_mobile.core.session.TokenDataStore
 import com.limbergdv.vivia_mobile.features.auth.domain.usecases.BiometricLoginUseCase
-import com.limbergdv.vivia_mobile.features.auth.domain.usecases.TraditionalLoginUseCase
+import com.limbergdv.vivia_mobile.features.auth.domain.usecases.LesseeLoginUseCase
 import com.limbergdv.vivia_mobile.features.users.lessees.domain.usecases.UpdateFcmTokenUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,7 +19,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginLesseeViewModel @Inject constructor(
-    private val traditionalLoginUseCase: TraditionalLoginUseCase,
+    private val lesseeLoginUseCase: LesseeLoginUseCase,
     private val biometricLoginUseCase: BiometricLoginUseCase,
     private val updateFcmTokenUseCase: UpdateFcmTokenUseCase,
 ) : ViewModel() {
@@ -50,12 +51,12 @@ class LoginLesseeViewModel @Inject constructor(
 
         viewModelScope.launch {
             _uiState.value = AuthUiState.Loading
-            traditionalLoginUseCase(email, password).fold(
+            lesseeLoginUseCase(email, password).fold(
                 onSuccess = {
                     _uiState.value = AuthUiState.Success
                     syncFirebaseToken()
                 },
-                onFailure = { 
+                onFailure = {
                     _uiState.value = AuthUiState.Error(it.message ?: "Error al iniciar sesión")
                 }
             )
@@ -65,7 +66,7 @@ class LoginLesseeViewModel @Inject constructor(
     fun onBiometricLogin(context: Context) {
         viewModelScope.launch {
             _uiState.value = AuthUiState.Loading
-            biometricLoginUseCase(context).fold(
+            biometricLoginUseCase(context, TokenDataStore.UserType.LESSEE).fold(
                 onSuccess = {
                     _uiState.value = AuthUiState.Success
                     syncFirebaseToken()

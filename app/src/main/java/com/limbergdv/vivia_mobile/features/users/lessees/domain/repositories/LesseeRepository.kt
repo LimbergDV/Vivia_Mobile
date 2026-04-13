@@ -1,5 +1,7 @@
 package com.limbergdv.vivia_mobile.features.users.lessees.domain.repositories
 
+import com.limbergdv.vivia_mobile.features.users.lessees.domain.entities.LessorWithFollowStatus
+
 interface LesseeRepository {
 
     suspend fun getRegistrationChallenge(
@@ -16,4 +18,6 @@ interface LesseeRepository {
     suspend fun updateFcmToken(token: String): Result<String>
 
     suspend fun followLessor(companyName: String): Result<String>
+
+    suspend fun getLessorsWithFollowStatus(): Result<List<LessorWithFollowStatus>>
 }

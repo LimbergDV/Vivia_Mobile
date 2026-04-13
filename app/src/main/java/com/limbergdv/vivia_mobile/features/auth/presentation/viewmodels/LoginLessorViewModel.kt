@@ -3,8 +3,9 @@ package com.limbergdv.vivia_mobile.features.auth.presentation.viewmodels
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.limbergdv.vivia_mobile.core.session.TokenDataStore
 import com.limbergdv.vivia_mobile.features.auth.domain.usecases.BiometricLoginUseCase
-import com.limbergdv.vivia_mobile.features.auth.domain.usecases.TraditionalLoginUseCase
+import com.limbergdv.vivia_mobile.features.auth.domain.usecases.LessorLoginUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,7 +16,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginLessorViewModel @Inject constructor(
-    private val traditionalLoginUseCase: TraditionalLoginUseCase,
+    private val lessorLoginUseCase: LessorLoginUseCase,
     private val biometricLoginUseCase: BiometricLoginUseCase
 ) : ViewModel() {
 
@@ -46,11 +47,11 @@ class LoginLessorViewModel @Inject constructor(
 
         viewModelScope.launch {
             _uiState.value = AuthUiState.Loading
-            traditionalLoginUseCase(companyName, password).fold(
+            lessorLoginUseCase(companyName, password).fold(
                 onSuccess = {
                     _uiState.value = AuthUiState.Success
                 },
-                onFailure = { 
+                onFailure = {
                     _uiState.value = AuthUiState.Error(it.message ?: "Error al iniciar sesión")
                 }
             )
@@ -60,7 +61,7 @@ class LoginLessorViewModel @Inject constructor(
     fun onBiometricLogin(context: Context) {
         viewModelScope.launch {
             _uiState.value = AuthUiState.Loading
-            biometricLoginUseCase(context).fold(
+            biometricLoginUseCase(context, TokenDataStore.UserType.LESSOR).fold(
                 onSuccess = {
                     _uiState.value = AuthUiState.Success
                 },
