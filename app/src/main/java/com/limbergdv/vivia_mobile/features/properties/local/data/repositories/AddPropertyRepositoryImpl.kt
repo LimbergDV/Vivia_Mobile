@@ -29,6 +29,7 @@ class AddPropertyRepositoryImpl @Inject constructor(
     @ApplicationContext private val context: Context
 ) : AddPropertyRepository {
 
+    // ── Borrador local (Room) ─────────────────────────────────────────────────
 
     override fun getDraft(): Flow<AddPropertyUiState?> =
         draftDao.getDraft().map { it?.toUiState() }
@@ -41,9 +42,11 @@ class AddPropertyRepositoryImpl @Inject constructor(
         draftDao.clearDraft()
     }
 
+    // ── Publicación remota ────────────────────────────────────────────────────
 
     override suspend fun createProperty(property: Property): Property {
 
+        // ── Paso 1: Crear propiedad con JSON puro ─────────────────────────────
         Log.d("VIVIA_PROPERTY_DEBUG", "=== Paso 1: Enviando JSON a POST /properties ===")
 
         val request = property.toRequest()
@@ -63,6 +66,7 @@ class AddPropertyRepositoryImpl @Inject constructor(
         Log.d("VIVIA_PROPERTY_DEBUG", "Propiedad creada con id: '$propertyId'")
         Log.d("VIVIA_PROPERTY_DEBUG", "¿propertyId está en blanco? ${propertyId.isBlank()}")
 
+        // ── Paso 2: Subir imágenes si las hay ────────────────────────────────
         if (property.imageUris.isNotEmpty() && propertyId.isNotBlank()) {
             Log.d("VIVIA_PROPERTY_DEBUG", "=== Paso 2: Subiendo ${property.imageUris.size} imágenes a /properties/$propertyId/images ===")
 
@@ -89,9 +93,13 @@ class AddPropertyRepositoryImpl @Inject constructor(
                         return body.data.toDomain()
                     }
                 } else {
+                    // ── Logs detallados para diagnosticar el 403 ─────────────
                     val errorBody = imageResponse.errorBody()?.string()
                     Log.e("VIVIA_PROPERTY_DEBUG", "Error HTTP ${imageResponse.code()} subiendo imágenes")
                     Log.e("VIVIA_PROPERTY_DEBUG", "Error body: $errorBody")
+                    Log.e("VIVIA_PROPERTY_DEBUG", "URL llamada: ${imageResponse.raw().request.url}")
+                    Log.e("VIVIA_PROPERTY_DEBUG", "Headers enviados: ${imageResponse.raw().request.headers}")
+                    Log.e("VIVIA_PROPERTY_DEBUG", "Response headers: ${imageResponse.headers()}")
                 }
             }
         }
@@ -99,6 +107,7 @@ class AddPropertyRepositoryImpl @Inject constructor(
         return createdProperty
     }
 
+    // ── Helpers ───────────────────────────────────────────────────────────────
 
     private fun uriToMultipart(uriString: String): MultipartBody.Part? {
         return try {

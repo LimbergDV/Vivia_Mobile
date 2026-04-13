@@ -7,12 +7,6 @@ data class AddressResponseDto(
     val neighborhood: String
 )
 
-data class PropertyListWrapper(
-    val success: Boolean,
-    val message: String?,
-    val data: List<PropertyResponseDto>?
-)
-
 data class PropertyResponseDto(
     val id: String,
     val title: String,
@@ -26,4 +20,10 @@ data class PropertyResponseDto(
     val parkingNumber: Int,
     val lessorId: String,
     val imageUrls: List<String>
+)
+
+data class PropertyListWrapper(
+    val success: Boolean,
+    val message: String?,
+    val data: List<PropertyResponseDto>?
 )
