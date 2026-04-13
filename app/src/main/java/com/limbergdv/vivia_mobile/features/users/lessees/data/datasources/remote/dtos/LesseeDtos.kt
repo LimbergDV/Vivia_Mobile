@@ -7,5 +7,6 @@ data class RegisterLesseeChallengeDto(
 )
 
 data class VerifyLesseeRegistrationDto(
+    val email: String,
     val credentialResponseJson: String
 )

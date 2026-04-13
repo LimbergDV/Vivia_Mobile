@@ -45,10 +45,12 @@ class LesseeRepositoryImpl @Inject constructor(
     }
 
     override suspend fun verifyRegistration(
+        email: String,
         credentialResponseJson: String
     ): Result<Unit> {
         return try {
             val request = VerifyLesseeRegistrationDto(
+                email = email,
                 credentialResponseJson = credentialResponseJson
             )
             val response = api.verifyRegistration(request)

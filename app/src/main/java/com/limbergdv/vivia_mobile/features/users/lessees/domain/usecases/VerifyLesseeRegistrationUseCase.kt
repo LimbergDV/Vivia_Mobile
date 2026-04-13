@@ -7,10 +7,11 @@ class VerifyLesseeRegistrationUseCase @Inject constructor(
     private val repository: LesseeRepository
 ) {
     suspend operator fun invoke(
+        email: String,
         credentialResponseJson: String
     ): Result<Unit> {
         return try {
-            repository.verifyRegistration(credentialResponseJson)
+            repository.verifyRegistration(email, credentialResponseJson)
         } catch (e: Exception) {
             Result.failure(e)
         }

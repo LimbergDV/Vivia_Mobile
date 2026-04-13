@@ -31,7 +31,7 @@ fun LessorOptionScreen(
             .padding(horizontal = 24.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Spacer(modifier = Modifier.height(4.dp)) // Margen superior
+        Spacer(modifier = Modifier.height(128.dp)) // Margen superior
 
         BrandHeader()
 

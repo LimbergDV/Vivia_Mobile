@@ -30,16 +30,42 @@ fun MyPropertiesScreen(
     viewModel: MyPropertiesViewModel = hiltViewModel(),
     onPropertyClick: (String) -> Unit,
     onAddPropertyClick: () -> Unit,
-    onNavigate: (String) -> Unit
+    onNavigate: (String) -> Unit,
+    onLogout: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    var showLogoutDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(uiState.errorMessage) {
         uiState.errorMessage?.let { error ->
             Toast.makeText(context, error, Toast.LENGTH_LONG).show()
             viewModel.clearErrorMessage()
         }
+    }
+
+    // Diálogo de confirmación de cierre de sesión
+    if (showLogoutDialog) {
+        AlertDialog(
+            onDismissRequest = { showLogoutDialog = false },
+            title = { Text("Cerrar sesión") },
+            text = { Text("¿Estás seguro de que deseas cerrar sesión?") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showLogoutDialog = false
+                        viewModel.logout(onLogoutComplete = onLogout)
+                    }
+                ) {
+                    Text("Sí, cerrar sesión")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showLogoutDialog = false }) {
+                    Text("Cancelar")
+                }
+            }
+        )
     }
 
     Scaffold(
@@ -51,7 +77,7 @@ fun MyPropertiesScreen(
                 onSavedClick = { onNavigate("saved") },
                 onAddClick = onAddPropertyClick,
                 onMessagesClick = { onNavigate("messages") },
-                onSettingsClick = { onNavigate("settings") }
+                onSettingsClick = { showLogoutDialog = true }
             )
         },
         floatingActionButton = {

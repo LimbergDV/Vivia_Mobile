@@ -27,7 +27,14 @@ class RegisterLessorUseCase @Inject constructor(
         val biometricResult = biometricService.registerBiometric(context, challengeJson)
         val credentialResponseJson = biometricResult.getOrElse { return Result.failure(it) }
 
-        // 3. Verificar en el servidor
-        return repository.verifyRegistration(credentialResponseJson)
+        // 3. Verificar en el servidor enviando todos los campos
+        return repository.verifyRegistration(
+            firstName = firstName,
+            lastName = lastName,
+            companyName = companyName,
+            password = password,
+            phoneNumber = phoneNumber,
+            credentialResponseJson = credentialResponseJson
+        )
     }
 }

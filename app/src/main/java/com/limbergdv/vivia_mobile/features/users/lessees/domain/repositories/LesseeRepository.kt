@@ -9,6 +9,7 @@ interface LesseeRepository {
     ): Result<String>
 
     suspend fun verifyRegistration(
+        email: String,
         credentialResponseJson: String
     ): Result<Unit>
 

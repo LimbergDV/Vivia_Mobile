@@ -81,7 +81,7 @@ fun HomeScreen(
         )
 
         // Espacio para la barra de navegación del sistema
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(40.dp))
     }
 }
 

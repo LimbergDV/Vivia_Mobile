@@ -16,17 +16,22 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.limbergdv.vivia_mobile.features.follows.presentation.components.LesseeBottomBar
 import com.limbergdv.vivia_mobile.features.follows.presentation.viewmodels.FollowsEvent
 import com.limbergdv.vivia_mobile.features.follows.presentation.viewmodels.FollowsViewModel
 import com.limbergdv.vivia_mobile.features.users.lessors.domain.entities.Lessor
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FollowsScreen(
-    onAddPropertyClick: () -> Unit = {},   // ← nuevo parámetro
+    onAddPropertyClick: () -> Unit = {},
+    onNavigate: (String) -> Unit = {},
+    onLogout: () -> Unit = {},
     viewModel: FollowsViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    var showLogoutDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(state.error) {
         state.error?.let {
@@ -35,54 +40,93 @@ fun FollowsScreen(
         }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White)
-            .padding(top = 48.dp, start = 24.dp, end = 24.dp)
-    ) {
-        Text(
-            text = "Descubre Arrendadores",
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.Black
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(
-            text = "Sigue a tus favoritos para no perderte sus propiedades.",
-            fontSize = 14.sp,
-            color = Color.Gray
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Botón temporal para navegar a AddProperty
-        Button(
-            onClick = onAddPropertyClick,
-            modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
-        ) {
-            Text("+ Agregar Propiedad (test)", color = Color.White)
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        if (state.isLoading && state.lessors.isEmpty()) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator(color = Color.Black)
+    // Diálogo de confirmación de cierre de sesión
+    if (showLogoutDialog) {
+        AlertDialog(
+            onDismissRequest = { showLogoutDialog = false },
+            title = { Text("Cerrar sesión") },
+            text = { Text("¿Estás seguro de que deseas cerrar sesión?") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showLogoutDialog = false
+                        viewModel.onEvent(FollowsEvent.Logout(onLogoutComplete = onLogout))
+                    }
+                ) {
+                    Text("Sí, cerrar sesión")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showLogoutDialog = false }) {
+                    Text("Cancelar")
+                }
             }
-        } else {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+        )
+    }
+
+    Scaffold(
+        containerColor = Color(0xFFF0F2F5),
+        bottomBar = {
+            LesseeBottomBar(
+                currentRoute = "home",
+                onHomeClick = { onNavigate("home") },
+                onFavoritesClick = { onNavigate("favorites") },
+                onSearchClick = { onNavigate("search") },
+                onMessagesClick = { onNavigate("messages") },
+                onSettingsClick = { showLogoutDialog = true }
+            )
+        }
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.White)
+                .padding(innerPadding)
+                .padding(top = 48.dp, start = 24.dp, end = 24.dp)
+        ) {
+            Text(
+                text = "Descubre Arrendadores",
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = "Sigue a tus favoritos para no perderte sus propiedades.",
+                fontSize = 14.sp,
+                color = Color.Gray
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Botón temporal para navegar a AddProperty
+            Button(
+                onClick = onAddPropertyClick,
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
             ) {
-                items(state.lessors) { lessor ->
-                    LessorItem(
-                        lessor = lessor,
-                        isFollowed = state.followedCompanies.contains(lessor.companyName),
-                        onFollowClick = {
-                            viewModel.onEvent(FollowsEvent.OnFollowClicked(lessor.companyName))
-                        }
-                    )
+                Text("+ Agregar Propiedad (test)", color = Color.White)
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            if (state.isLoading && state.lessors.isEmpty()) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator(color = Color.Black)
+                }
+            } else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    items(state.lessors) { lessor ->
+                        LessorItem(
+                            lessor = lessor,
+                            isFollowed = state.followedCompanies.contains(lessor.companyName),
+                            onFollowClick = {
+                                viewModel.onEvent(FollowsEvent.OnFollowClicked(lessor.companyName))
+                            }
+                        )
+                    }
                 }
             }
         }

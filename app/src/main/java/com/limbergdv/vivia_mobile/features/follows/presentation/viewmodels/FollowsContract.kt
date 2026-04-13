@@ -15,4 +15,5 @@ sealed class FollowsEvent {
     object LoadLessors : FollowsEvent()
     data class OnFollowClicked(val companyName: String) : FollowsEvent()
     object ConsumeError : FollowsEvent()
+    data class Logout(val onLogoutComplete: () -> Unit) : FollowsEvent()
 }

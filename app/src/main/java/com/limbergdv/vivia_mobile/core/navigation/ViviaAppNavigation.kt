@@ -130,7 +130,13 @@ fun ViviaAppNavigation(
             }
 
             composable(AppRoutes.FOLLOWS_LIST) {
-                FollowsScreen()
+                FollowsScreen(
+                    onNavigate = { destination -> appNavigator.navigate(destination) },
+                    onLogout = {
+                        // No hacemos nada aquí, el MainActivity manejará la navegación
+                        // al observar el cambio en TokenDataStore
+                    }
+                )
             }
 
             composable("property_details/{propertyId}") { backStackEntry ->

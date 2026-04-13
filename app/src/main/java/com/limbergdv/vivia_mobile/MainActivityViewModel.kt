@@ -29,7 +29,6 @@ class MainActivityViewModel @Inject constructor(
     private fun checkAuthState() {
         viewModelScope.launch {
             tokenDataStore.accessTokenFlow
-                .take(1)
                 .collect { token ->
                     if (token != null) {
                         _authState.value = AuthState.Authenticated

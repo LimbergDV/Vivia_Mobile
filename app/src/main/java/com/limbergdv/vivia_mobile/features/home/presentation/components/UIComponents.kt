@@ -27,7 +27,7 @@ fun BrandHeader(modifier: Modifier = Modifier) {
         Image(
             painter = painterResource(id = R.drawable.ic_vivia_logo_phrase), // Tu archivo XML
             contentDescription = "Logo Vívia",
-            modifier = Modifier.height(300.dp)
+            modifier = Modifier.height(250.dp)
         )
         Spacer(modifier = Modifier.height(8.dp))
         /*Text(

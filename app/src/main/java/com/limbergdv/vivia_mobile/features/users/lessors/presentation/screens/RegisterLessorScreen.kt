@@ -71,7 +71,7 @@ fun RegisterLessorScreen(
             Image(
                 painter = painterResource(id = R.drawable.ic_vivia_logo_only),
                 contentDescription = "Logo Vívia",
-                modifier = Modifier.height(80.dp)
+                modifier = Modifier.height(32.dp)
             )
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -156,7 +156,7 @@ fun RegisterLessorScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(48.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
             SecondaryTextButton(
                 text = "Cancelar",
