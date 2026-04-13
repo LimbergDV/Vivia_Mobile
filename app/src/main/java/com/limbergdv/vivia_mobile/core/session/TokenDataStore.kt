@@ -17,6 +17,11 @@ class TokenDataStore @Inject constructor(@ApplicationContext context: Context) {
     companion object {
         private const val ACCESS_TOKEN = "access_token"
         private const val REFRESH_TOKEN = "refresh_token"
+        private const val USER_TYPE = "user_type"
+    }
+
+    enum class UserType {
+        LESSEE, LESSOR
     }
 
     val accessTokenFlow: Flow<String?> = callbackFlow {
@@ -30,11 +35,12 @@ class TokenDataStore @Inject constructor(@ApplicationContext context: Context) {
         awaitClose { prefs.unregisterOnSharedPreferenceChangeListener(listener) }
     }
 
-    suspend fun saveTokens(accessToken: String, refreshToken: String) {
-        prefs.edit()
-            .putString(ACCESS_TOKEN, accessToken)
-            .putString(REFRESH_TOKEN, refreshToken)
-            .apply()
+    suspend fun saveTokens(accessToken: String, refreshToken: String, userType: UserType? = null) {
+        val editor = prefs.edit()
+        editor.putString(ACCESS_TOKEN, accessToken)
+        editor.putString(REFRESH_TOKEN, refreshToken)
+        userType?.let { editor.putString(USER_TYPE, it.name) }
+        editor.apply()
     }
 
     fun getAccessToken(): String? {
@@ -45,10 +51,21 @@ class TokenDataStore @Inject constructor(@ApplicationContext context: Context) {
         return prefs.getString(REFRESH_TOKEN, null)
     }
 
+    fun getUserType(): UserType? {
+        return prefs.getString(USER_TYPE, null)?.let {
+            try {
+                UserType.valueOf(it)
+            } catch (e: IllegalArgumentException) {
+                null
+            }
+        }
+    }
+
     suspend fun clearTokens() {
         prefs.edit()
             .remove(ACCESS_TOKEN)
             .remove(REFRESH_TOKEN)
+            .remove(USER_TYPE)
             .apply()
     }
 }

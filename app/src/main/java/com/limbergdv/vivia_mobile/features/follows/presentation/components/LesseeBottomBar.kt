@@ -23,10 +23,10 @@ val ViviaLight = Color(0xFFEEF2F7)
 fun LesseeBottomBar(
     currentRoute: String,
     onHomeClick: () -> Unit,
-    onFavoritesClick: () -> Unit,
+    onFollowsClick: () -> Unit,
     onSearchClick: () -> Unit,
-    onMessagesClick: () -> Unit,
-    onSettingsClick: () -> Unit
+    onProfileClick: () -> Unit,
+    onLogoutClick: () -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -49,9 +49,9 @@ fun LesseeBottomBar(
                 onClick = onHomeClick
             )
             NavBarItem(
-                icon = Icons.Outlined.FavoriteBorder,
-                isSelected = currentRoute == "favorites",
-                onClick = onFavoritesClick
+                icon = Icons.Outlined.Group,
+                isSelected = currentRoute == "follows",
+                onClick = onFollowsClick
             )
             NavBarItem(
                 icon = Icons.Outlined.Search,
@@ -59,14 +59,14 @@ fun LesseeBottomBar(
                 onClick = onSearchClick
             )
             NavBarItem(
-                icon = Icons.Outlined.ChatBubbleOutline,
-                isSelected = currentRoute == "messages",
-                onClick = onMessagesClick
+                icon = Icons.Outlined.Person,
+                isSelected = currentRoute == "profile",
+                onClick = onProfileClick
             )
             NavBarItem(
-                icon = Icons.Outlined.Settings,
-                isSelected = currentRoute == "settings",
-                onClick = onSettingsClick
+                icon = Icons.Outlined.ExitToApp,
+                isSelected = false,
+                onClick = onLogoutClick
             )
         }
     }

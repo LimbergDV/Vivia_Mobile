@@ -1,6 +1,7 @@
 package com.limbergdv.vivia_mobile.core.di
 
 import com.limbergdv.vivia_mobile.core.network.AuthInterceptor
+import com.limbergdv.vivia_mobile.core.network.LoggingInterceptor
 import com.limbergdv.vivia_mobile.core.network.TokenAuthenticator
 import dagger.Module
 import dagger.Provides
@@ -22,6 +23,7 @@ object NetworkModule {
         tokenAuthenticator: TokenAuthenticator
     ): OkHttpClient {
         return OkHttpClient.Builder()
+            .addInterceptor(LoggingInterceptor()) // Logging primero
             .addInterceptor(authInterceptor)
             .authenticator(tokenAuthenticator)
             .build()

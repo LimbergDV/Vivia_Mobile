@@ -22,16 +22,16 @@ class AuthRepositoryImpl @Inject constructor(
         return try {
             val request = LoginRequestDto(identifier, password)
             val response = authApi.loginTraditional(request)
-            
+
             if (response.isSuccessful) {
                 val body = response.body()
                 if (body?.success == true && body.data != null) {
                     val authToken = body.data.toDomain()
-                    tokenDataStore.saveTokens(authToken.accessToken, authToken.refreshToken)
-                    
+                    // NO guardamos tokens aquí - lo hace el UseCase específico con userType
+
                     Log.d("VIVIA_AUTH_DEBUG", "🔑 Traditional Login Success")
                     Log.d("VIVIA_AUTH_DEBUG", "Token: ${authToken.accessToken}")
-                    
+
                     Result.success(authToken)
                 } else {
                     Result.failure(Exception(body?.message ?: "Error desconocido en el servidor"))
@@ -74,15 +74,15 @@ class AuthRepositoryImpl @Inject constructor(
         return try {
             val request = VerifyLoginRequestDto(credentialResponseJson)
             val response = authApi.verifyLogin(request)
-            
+
             if (response.isSuccessful) {
                 val body = response.body()
                 if (body?.success == true && body.data != null) {
                     val authToken = body.data.toDomain()
-                    tokenDataStore.saveTokens(authToken.accessToken, authToken.refreshToken)
-                    
+                    // NO guardamos tokens aquí - lo hace el UseCase específico con userType
+
                     Log.d("VIVIA_AUTH_DEBUG", "🔑 Biometric Login Success")
-                    
+
                     Result.success(authToken)
                 } else {
                     Result.failure(Exception(body?.message ?: "Error al verificar la credencial"))
@@ -103,12 +103,14 @@ class AuthRepositoryImpl @Inject constructor(
         return try {
             val request = RefreshTokenRequestDto(refreshToken)
             val response = authApi.refreshToken(request).execute()
-            
+
             if (response.isSuccessful) {
                 val body = response.body()
                 if (body?.success == true && body.data != null) {
                     val authToken = body.data.toDomain()
-                    tokenDataStore.saveTokens(authToken.accessToken, authToken.refreshToken)
+                    // Preservar el userType existente al refrescar el token
+                    val currentUserType = tokenDataStore.getUserType()
+                    tokenDataStore.saveTokens(authToken.accessToken, authToken.refreshToken, currentUserType)
                     Result.success(authToken)
                 } else {
                     Result.failure(Exception(body?.message ?: "Error al refrescar el token"))

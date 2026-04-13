@@ -3,6 +3,8 @@ package com.limbergdv.vivia_mobile.features.users.lessees.data.repositories
 import com.limbergdv.vivia_mobile.features.users.lessees.data.datasources.remote.api.LesseeApi
 import com.limbergdv.vivia_mobile.features.users.lessees.data.datasources.remote.dtos.RegisterLesseeChallengeDto
 import com.limbergdv.vivia_mobile.features.users.lessees.data.datasources.remote.dtos.VerifyLesseeRegistrationDto
+import com.limbergdv.vivia_mobile.features.users.lessees.data.datasources.remote.mappers.toDomain
+import com.limbergdv.vivia_mobile.features.users.lessees.domain.entities.LessorWithFollowStatus
 import com.limbergdv.vivia_mobile.features.users.lessees.domain.repositories.LesseeRepository
 import retrofit2.HttpException
 import java.io.IOException
@@ -105,6 +107,32 @@ class LesseeRepositoryImpl @Inject constructor(
             } else {
                 Result.failure(Exception("Error HTTP ${response.code()}"))
             }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun getLessorsWithFollowStatus(): Result<List<LessorWithFollowStatus>> {
+        return try {
+            val response = api.getLessorsWithFollowStatus()
+            if (response.isSuccessful) {
+                val body = response.body()
+                if (body?.success == true && body.data != null) {
+                    // Filtrar elementos con datos inválidos
+                    val lessors = body.data
+                        .filter { it.lessor != null && !it.lessor.companyName.isNullOrBlank() }
+                        .map { it.toDomain() }
+                    Result.success(lessors)
+                } else {
+                    Result.failure(Exception(body?.message ?: "Error al obtener la lista de arrendadores"))
+                }
+            } else {
+                Result.failure(Exception("Error HTTP ${response.code()}"))
+            }
+        } catch (e: IOException) {
+            Result.failure(Exception("Sin conexión a internet", e))
+        } catch (e: HttpException) {
+            Result.failure(Exception("Error en el servidor", e))
         } catch (e: Exception) {
             Result.failure(e)
         }

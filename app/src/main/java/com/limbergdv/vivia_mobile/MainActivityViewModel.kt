@@ -10,7 +10,7 @@ import javax.inject.Inject
 
 sealed interface AuthState {
     object Loading : AuthState
-    object Authenticated : AuthState
+    data class Authenticated(val userType: TokenDataStore.UserType) : AuthState
     object Unauthenticated : AuthState
 }
 
@@ -31,7 +31,8 @@ class MainActivityViewModel @Inject constructor(
             tokenDataStore.accessTokenFlow
                 .collect { token ->
                     if (token != null) {
-                        _authState.value = AuthState.Authenticated
+                        val userType = tokenDataStore.getUserType() ?: TokenDataStore.UserType.LESSEE
+                        _authState.value = AuthState.Authenticated(userType)
                     } else {
                         _authState.value = AuthState.Unauthenticated
                     }

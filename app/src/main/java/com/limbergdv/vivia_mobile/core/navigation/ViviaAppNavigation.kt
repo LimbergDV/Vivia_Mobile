@@ -6,6 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
+import com.limbergdv.vivia_mobile.core.session.TokenDataStore
 import com.limbergdv.vivia_mobile.features.auth.presentation.screens.LoginLesseeScreen
 import com.limbergdv.vivia_mobile.features.auth.presentation.screens.LoginLessorScreen
 import com.limbergdv.vivia_mobile.features.follows.presentation.screens.FollowsScreen
@@ -21,7 +22,8 @@ import com.limbergdv.vivia_mobile.features.users.lessors.presentation.screens.Re
 @Composable
 fun ViviaAppNavigation(
     appNavigator: AppNavigatorImpl,
-    startDestination: String = AppRoutes.AUTH_GRAPH
+    startDestination: String = AppRoutes.AUTH_GRAPH,
+    userType: TokenDataStore.UserType? = null
 ) {
     val navController = rememberNavController()
 
@@ -113,8 +115,14 @@ fun ViviaAppNavigation(
         }
 
         // Grafo Principal (Usuario logueado)
+        val homeGraphStart = when (userType) {
+            TokenDataStore.UserType.LESSEE -> AppRoutes.FOLLOWS_LIST
+            TokenDataStore.UserType.LESSOR -> AppRoutes.MY_PROPERTIES
+            null -> AppRoutes.MY_PROPERTIES // Default
+        }
+
         navigation(
-            startDestination = AppRoutes.MY_PROPERTIES,
+            startDestination = homeGraphStart,
             route = AppRoutes.HOME_GRAPH
         ) {
             composable(AppRoutes.MY_PROPERTIES) {

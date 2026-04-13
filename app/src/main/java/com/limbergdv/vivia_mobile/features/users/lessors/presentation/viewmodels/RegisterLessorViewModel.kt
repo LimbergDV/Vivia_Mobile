@@ -1,6 +1,7 @@
 package com.limbergdv.vivia_mobile.features.users.lessors.presentation.viewmodels
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.limbergdv.vivia_mobile.features.auth.presentation.viewmodels.AuthUiState
@@ -38,7 +39,17 @@ class RegisterLessorViewModel @Inject constructor(
 
     fun onRegister(context: Context) {
         val s = _state.value
-        if (s.firstName.isBlank() || s.lastName.isBlank() || s.companyName.isBlank() || 
+
+        Log.d("RegisterLessorVM", "═══════════════════════════════════════")
+        Log.d("RegisterLessorVM", "📝 DATOS DEL FORMULARIO:")
+        Log.d("RegisterLessorVM", "  firstName: '${s.firstName}'")
+        Log.d("RegisterLessorVM", "  lastName: '${s.lastName}'")
+        Log.d("RegisterLessorVM", "  companyName: '${s.companyName}'")
+        Log.d("RegisterLessorVM", "  password: '${s.password}'")
+        Log.d("RegisterLessorVM", "  phoneNumber: '${s.phoneNumber}' (length: ${s.phoneNumber.length})")
+        Log.d("RegisterLessorVM", "═══════════════════════════════════════")
+
+        if (s.firstName.isBlank() || s.lastName.isBlank() || s.companyName.isBlank() ||
             s.password.isBlank() || s.phoneNumber.isBlank()) {
             _uiState.value = AuthUiState.Error("Todos los campos son obligatorios")
             return
@@ -55,9 +66,11 @@ class RegisterLessorViewModel @Inject constructor(
                 phoneNumber = s.phoneNumber
             ).fold(
                 onSuccess = {
+                    Log.d("RegisterLessorVM", "✅ Registro exitoso")
                     _uiState.value = AuthUiState.Success
                 },
                 onFailure = {
+                    Log.e("RegisterLessorVM", "❌ Error al registrar: ${it.message}")
                     _uiState.value = AuthUiState.Error(it.message ?: "Error al registrar")
                 }
             )

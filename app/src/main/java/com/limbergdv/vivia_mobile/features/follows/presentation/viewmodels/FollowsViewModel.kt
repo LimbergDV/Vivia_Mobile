@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.limbergdv.vivia_mobile.features.auth.domain.usecases.LogoutUseCase
 import com.limbergdv.vivia_mobile.features.users.lessees.domain.usecases.FollowLessorUseCase
-import com.limbergdv.vivia_mobile.features.users.lessors.domain.usecases.GetAllLessorsUseCase
+import com.limbergdv.vivia_mobile.features.users.lessees.domain.usecases.GetLessorsWithFollowStatusUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,7 +16,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class FollowsViewModel @Inject constructor(
-    private val getAllLessorsUseCase: GetAllLessorsUseCase,
+    private val getLessorsWithFollowStatusUseCase: GetLessorsWithFollowStatusUseCase,
     private val followLessorUseCase: FollowLessorUseCase,
     private val logoutUseCase: LogoutUseCase
 ) : ViewModel() {
@@ -42,29 +42,45 @@ class FollowsViewModel @Inject constructor(
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
 
-            // AQUÍ IRÁ LA LLAMADA AL USE CASE:
-            val result = getAllLessorsUseCase()
+            val result = getLessorsWithFollowStatusUseCase()
             result.fold(
-                onSuccess = { list -> _state.update { it.copy(isLoading = false, lessors = list) } },
-                onFailure = { e -> _state.update { it.copy(isLoading = false, error = e.message) } }
+                onSuccess = { list ->
+                    _state.update { it.copy(isLoading = false, lessors = list) }
+                },
+                onFailure = { e ->
+                    _state.update { it.copy(isLoading = false, error = e.message) }
+                }
             )
         }
     }
 
     private fun followLessor(companyName: String) {
         viewModelScope.launch {
-            // Actualizamos la UI inmediatamente (Optimistic Update) para que el botón reaccione rápido
-            _state.update {
-                it.copy(followedCompanies = it.followedCompanies + companyName)
+            // Actualizamos la UI inmediatamente (Optimistic Update)
+            _state.update { currentState ->
+                currentState.copy(
+                    lessors = currentState.lessors.map { lessor ->
+                        if (lessor.companyName == companyName) {
+                            lessor.copy(isFollowing = true)
+                        } else {
+                            lessor
+                        }
+                    }
+                )
             }
 
-            // AQUÍ IRÁ LA LLAMADA AL USE CASE:
             val result = followLessorUseCase(companyName)
             result.onFailure { e ->
-            // Si falla, revertimos el cambio visual y mostramos error
-                _state.update {
-                    it.copy(
-                        followedCompanies = it.followedCompanies - companyName,
+                // Si falla, revertimos el cambio visual y mostramos error
+                _state.update { currentState ->
+                    currentState.copy(
+                        lessors = currentState.lessors.map { lessor ->
+                            if (lessor.companyName == companyName) {
+                                lessor.copy(isFollowing = false)
+                            } else {
+                                lessor
+                            }
+                        },
                         error = "No se pudo seguir a $companyName"
                     )
                 }

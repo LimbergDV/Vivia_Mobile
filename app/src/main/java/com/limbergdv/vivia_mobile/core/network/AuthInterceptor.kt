@@ -14,6 +14,7 @@ class AuthInterceptor @Inject constructor(
 
         // Si no hay token, hacemos la petición normal (ej. Login/Register)
         if (token == null) {
+            android.util.Log.d("AuthInterceptor", "No token found for ${originalRequest.url}")
             return chain.proceed(originalRequest)
         }
 
@@ -22,6 +23,7 @@ class AuthInterceptor @Inject constructor(
             .header("Authorization", "Bearer $token")
             .build()
 
+        android.util.Log.d("AuthInterceptor", "Adding token to ${originalRequest.url}")
         return chain.proceed(newRequest)
     }
 }
