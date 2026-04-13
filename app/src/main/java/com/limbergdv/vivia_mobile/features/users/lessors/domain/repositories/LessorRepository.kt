@@ -13,11 +13,7 @@ interface LessorRepository {
     ): Result<String>
 
     suspend fun verifyRegistration(
-        firstName: String,
-        lastName: String,
         companyName: String,
-        password: String,
-        phoneNumber: String,
         credentialResponseJson: String
     ): Result<Unit>
 

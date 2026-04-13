@@ -51,20 +51,12 @@ class LessorRepositoryImpl @Inject constructor(
     }
 
     override suspend fun verifyRegistration(
-        firstName: String,
-        lastName: String,
         companyName: String,
-        password: String,
-        phoneNumber: String,
         credentialResponseJson: String
     ): Result<Unit> {
         return try {
             val request = VerifyLessorRegistrationDto(
-                firstName = firstName,
-                lastName = lastName,
                 companyName = companyName,
-                password = password,
-                phoneNumber = phoneNumber,
                 credentialResponseJson = credentialResponseJson
             )
             val response = api.verifyRegistration(request)

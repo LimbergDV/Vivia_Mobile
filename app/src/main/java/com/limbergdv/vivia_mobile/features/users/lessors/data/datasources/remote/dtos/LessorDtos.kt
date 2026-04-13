@@ -12,13 +12,16 @@ data class RegisterLessorChallengeDto(
 )
 
 data class VerifyLessorRegistrationDto(
+    val companyName: String,
+    val credentialResponseJson: String
+)
+
+data class LessorRegistrationResponseDto(
+    val id: String,
     val firstName: String,
     val lastName: String,
     val companyName: String,
-    val password: String,
-    //@SerializedName("phone_number")
-    val phoneNumber: String,
-    val credentialResponseJson: String
+    val phoneNumber: String
 )
 
 data class LessorResponseDto(

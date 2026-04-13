@@ -10,3 +10,9 @@ data class VerifyLesseeRegistrationDto(
     val email: String,
     val credentialResponseJson: String
 )
+
+data class LesseeRegistrationResponseDto(
+    val id: String,
+    val username: String,
+    val email: String
+)
