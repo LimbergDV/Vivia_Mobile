@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.limbergdv.vivia_mobile.core.database.AppDatabase
 import com.limbergdv.vivia_mobile.core.database.dao.PropertyDraftDao
+import com.limbergdv.vivia_mobile.core.database.dao.PropertyDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -23,7 +24,10 @@ object DatabaseModule {
             AppDatabase::class.java,
             "ViviaDB"
         )
-            .addMigrations(AppDatabase.MIGRATION_1_2)   // ← migration nueva
+            .addMigrations(
+                AppDatabase.MIGRATION_1_2,
+                AppDatabase.MIGRATION_2_3
+            )
             .build()
     }
 
@@ -31,5 +35,5 @@ object DatabaseModule {
     fun providePropertyDraftDao(db: AppDatabase): PropertyDraftDao = db.propertyDraftDao()
 
     @Provides
-    fun providePropertyDao(db: AppDatabase): com.limbergdv.vivia_mobile.core.database.dao.PropertyDao = db.propertyDao()
+    fun providePropertyDao(db: AppDatabase): PropertyDao = db.propertyDao()
 }

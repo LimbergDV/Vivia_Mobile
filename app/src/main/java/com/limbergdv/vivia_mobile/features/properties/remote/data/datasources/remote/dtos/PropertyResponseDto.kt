@@ -1,19 +1,24 @@
 package com.limbergdv.vivia_mobile.features.properties.remote.data.datasources.remote.dtos
 
+data class AddressResponseDto(
+    val address: String,
+    val city: String,
+    val state: String,
+    val neighborhood: String
+)
+
 data class PropertyListWrapper(
     val success: Boolean,
     val message: String?,
     val data: List<PropertyResponseDto>?
 )
+
 data class PropertyResponseDto(
     val id: String,
     val title: String,
     val description: String,
     val price: Double,
-    val address: String,
-    val city: String,
-    val state: String,
-    val neighborhood: String,
+    val address: AddressResponseDto,
     val departmentType: String,
     val area: Double,
     val roomsNumber: Int,
