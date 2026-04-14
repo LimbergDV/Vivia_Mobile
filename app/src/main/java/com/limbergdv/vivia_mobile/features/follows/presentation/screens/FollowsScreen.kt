@@ -81,7 +81,7 @@ fun FollowsScreen(
                 onHomeClick = { onNavigate(AppRoutes.LESSEE_HOME) },
                 onFollowsClick = { /* Ya estamos aquí */ },
                 onSearchClick = { onNavigate("search") },
-                onProfileClick = { onNavigate("profile") },
+                onProfileClick = { onNavigate(AppRoutes.LESSEE_PROFILE) },
                 onLogoutClick = { showLogoutDialog = true }
             )
         }

@@ -1,5 +1,6 @@
 package com.limbergdv.vivia_mobile.features.users.lessees.domain.repositories
 
+import com.limbergdv.vivia_mobile.features.users.lessees.domain.entities.Lessee
 import com.limbergdv.vivia_mobile.features.users.lessees.domain.entities.LessorWithFollowStatus
 
 interface LesseeRepository {
@@ -20,4 +21,6 @@ interface LesseeRepository {
     suspend fun followLessor(companyName: String): Result<String>
 
     suspend fun getLessorsWithFollowStatus(): Result<List<LessorWithFollowStatus>>
+
+    suspend fun getLesseeProfile(): Result<Lessee>
 }

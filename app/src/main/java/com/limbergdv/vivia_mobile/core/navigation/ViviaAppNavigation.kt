@@ -12,6 +12,7 @@ import com.limbergdv.vivia_mobile.features.auth.presentation.screens.LoginLessor
 import com.limbergdv.vivia_mobile.features.follows.presentation.screens.FollowersScreen
 import com.limbergdv.vivia_mobile.features.follows.presentation.screens.FollowsScreen
 import com.limbergdv.vivia_mobile.features.properties.remote.presentation.screens.LesseePropertiesScreen
+import com.limbergdv.vivia_mobile.features.users.lessees.presentation.screens.LesseeProfileScreen
 import com.limbergdv.vivia_mobile.features.users.lessors.presentation.screens.LessorProfileScreen
 import com.limbergdv.vivia_mobile.features.home.presentation.screens.HomeScreen
 import com.limbergdv.vivia_mobile.features.home.presentation.screens.LessorOptionScreen
@@ -166,6 +167,13 @@ fun ViviaAppNavigation(
                     onLogout = {
                         // El MainActivity manejará el logout al observar el cambio de tokens
                     }
+                )
+            }
+
+            composable(AppRoutes.LESSEE_PROFILE) {
+                LesseeProfileScreen(
+                    onNavigate = { destination -> appNavigator.navigate(destination) },
+                    onLogout = {}
                 )
             }
 
