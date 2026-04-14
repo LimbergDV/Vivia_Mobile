@@ -106,6 +106,7 @@ fun LesseeSearchScreen(
             filter = state.filter,
             availableTypes = state.availableTypes,
             maxPriceInData = state.maxPriceInData,
+            mexicoLocations = state.mexicoLocations,
             onApply = { viewModel.onEvent(LesseeSearchEvent.UpdateFilter(it)) },
             onDismiss = { showFilterSheet = false }
         )
