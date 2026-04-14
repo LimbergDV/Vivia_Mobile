@@ -1,5 +1,6 @@
 package com.limbergdv.vivia_mobile.features.properties.remote.presentation.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
@@ -10,15 +11,16 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -36,6 +38,46 @@ fun PropertyDetailScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val scrollState = rememberScrollState()
+    val context = LocalContext.current
+    var showDeleteDialog by remember { mutableStateOf(false) }
+
+    LaunchedEffect(uiState.isDeleted) {
+        if (uiState.isDeleted) {
+            Toast.makeText(context, "Propiedad eliminada", Toast.LENGTH_SHORT).show()
+            onBack()
+        }
+    }
+
+    LaunchedEffect(uiState.error) {
+        uiState.error?.let {
+            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+            viewModel.clearError()
+        }
+    }
+
+    if (showDeleteDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteDialog = false },
+            title = { Text("Eliminar propiedad") },
+            text = { Text("¿Estás seguro de que deseas eliminar esta propiedad? Esta acción no se puede deshacer.") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showDeleteDialog = false
+                        viewModel.deleteProperty()
+                    },
+                    colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)
+                ) {
+                    Text("Eliminar")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteDialog = false }) {
+                    Text("Cancelar")
+                }
+            }
+        )
+    }
 
     Scaffold(
         containerColor = Color.White
@@ -52,11 +94,23 @@ fun PropertyDetailScreen(
                 ) {
                     PropertyImageCarousel(
                         imageUrls = property.imageUrls,
-                        onBack = onBack
+                        onBack = onBack,
+                        onDeleteClick = { showDeleteDialog = true }
                     )
                     PropertyInfo(
                         property = property
                     )
+                }
+                
+                if (uiState.isDeleting) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color.Black.copy(alpha = 0.3f)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator(color = Color.White)
+                    }
                 }
             } else {
                 Text(
@@ -70,7 +124,11 @@ fun PropertyDetailScreen(
 }
 
 @Composable
-fun PropertyImageCarousel(imageUrls: List<String>, onBack: () -> Unit) {
+fun PropertyImageCarousel(
+    imageUrls: List<String>,
+    onBack: () -> Unit,
+    onDeleteClick: () -> Unit
+) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -137,6 +195,25 @@ fun PropertyImageCarousel(imageUrls: List<String>, onBack: () -> Unit) {
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
                     contentDescription = "Atrás",
+                    tint = Color.White
+                )
+            }
+        }
+
+        // Botón eliminar
+        Box(
+            modifier = Modifier
+                .padding(16.dp)
+                .size(40.dp)
+                .clip(CircleShape)
+                .background(Color.Black.copy(alpha = 0.4f))
+                .align(Alignment.TopEnd),
+            contentAlignment = Alignment.Center
+        ) {
+            IconButton(onClick = onDeleteClick) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Eliminar",
                     tint = Color.White
                 )
             }

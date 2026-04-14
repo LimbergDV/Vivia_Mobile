@@ -22,8 +22,8 @@ class MyPropertiesRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getPropertyById(id: String): Flow<Property> {
-        return propertyDao.observeById(id).map { it.toDomain() }
+    override fun getPropertyById(id: String): Flow<Property?> {
+        return propertyDao.observeById(id).map { it?.toDomain() }
     }
 
     override suspend fun syncMyProperties(): Result<Unit> {
@@ -55,6 +55,25 @@ class MyPropertiesRepositoryImpl @Inject constructor(
             }
         } catch (e: Exception) {
             Log.e("SyncProperties", "Excepción al sincronizar: ${e.message}", e)
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun deleteProperty(id: String): Result<Unit> {
+        return try {
+            val response = myPropertiesApi.deleteProperty(id)
+            if (response.isSuccessful) {
+                val body = response.body()
+                if (body?.success == true) {
+                    propertyDao.deleteById(id)
+                    Result.success(Unit)
+                } else {
+                    Result.failure(Exception(body?.message ?: "Error al eliminar la propiedad"))
+                }
+            } else {
+                Result.failure(Exception("Error en el servidor (HTTP ${response.code()})"))
+            }
+        } catch (e: Exception) {
             Result.failure(e)
         }
     }

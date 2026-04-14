@@ -4,5 +4,8 @@ import com.limbergdv.vivia_mobile.features.properties.remote.domain.entities.Pro
 
 data class PropertyDetailsUiState(
     val property: Property? = null,
-    val isLoading: Boolean = true
+    val isLoading: Boolean = true,
+    val isDeleting: Boolean = false,
+    val isDeleted: Boolean = false,
+    val error: String? = null
 )
