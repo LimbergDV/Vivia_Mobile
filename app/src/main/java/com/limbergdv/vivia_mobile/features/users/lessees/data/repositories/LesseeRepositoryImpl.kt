@@ -4,6 +4,7 @@ import com.limbergdv.vivia_mobile.features.users.lessees.data.datasources.remote
 import com.limbergdv.vivia_mobile.features.users.lessees.data.datasources.remote.dtos.RegisterLesseeChallengeDto
 import com.limbergdv.vivia_mobile.features.users.lessees.data.datasources.remote.dtos.VerifyLesseeRegistrationDto
 import com.limbergdv.vivia_mobile.features.users.lessees.data.datasources.remote.mappers.toDomain
+import com.limbergdv.vivia_mobile.features.users.lessees.domain.entities.Lessee
 import com.limbergdv.vivia_mobile.features.users.lessees.domain.entities.LessorWithFollowStatus
 import com.limbergdv.vivia_mobile.features.users.lessees.domain.repositories.LesseeRepository
 import retrofit2.HttpException
@@ -107,6 +108,29 @@ class LesseeRepositoryImpl @Inject constructor(
             } else {
                 Result.failure(Exception("Error HTTP ${response.code()}"))
             }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun getLesseeProfile(): Result<Lessee> {
+        return try {
+            val response = api.getLesseeProfile()
+            if (response.isSuccessful) {
+                val body = response.body()
+                if (body?.success == true && body.data != null) {
+                    val dto = body.data
+                    Result.success(Lessee(id = dto.id, username = dto.username, email = dto.email, password = ""))
+                } else {
+                    Result.failure(Exception(body?.message ?: "Error al obtener el perfil"))
+                }
+            } else {
+                Result.failure(Exception("Error HTTP ${response.code()}"))
+            }
+        } catch (e: IOException) {
+            Result.failure(Exception("Sin conexión a internet", e))
+        } catch (e: HttpException) {
+            Result.failure(Exception("Error en el servidor", e))
         } catch (e: Exception) {
             Result.failure(e)
         }

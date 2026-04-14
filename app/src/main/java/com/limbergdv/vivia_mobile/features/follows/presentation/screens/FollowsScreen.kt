@@ -25,6 +25,7 @@ import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import com.limbergdv.vivia_mobile.core.navigation.AppRoutes
 import com.limbergdv.vivia_mobile.features.follows.presentation.components.LesseeBottomBar
 import com.limbergdv.vivia_mobile.features.follows.presentation.viewmodels.FollowsEvent
 import com.limbergdv.vivia_mobile.features.follows.presentation.viewmodels.FollowsViewModel
@@ -77,10 +78,10 @@ fun FollowsScreen(
         bottomBar = {
             LesseeBottomBar(
                 currentRoute = "follows",
-                onHomeClick = { onNavigate("home") },
+                onHomeClick = { onNavigate(AppRoutes.LESSEE_HOME) },
                 onFollowsClick = { /* Ya estamos aquí */ },
-                onSearchClick = { onNavigate("search") },
-                onProfileClick = { onNavigate("profile") },
+                onSearchClick = { onNavigate(AppRoutes.LESSEE_SEARCH) },
+                onProfileClick = { onNavigate(AppRoutes.LESSEE_PROFILE) },
                 onLogoutClick = { showLogoutDialog = true }
             )
         }

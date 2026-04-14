@@ -9,11 +9,14 @@ object AppRoutes {
     const val LOGIN_LESSEE = "login_lessee"
     const val LOGIN_LESSOR = "login_lessor"
     const val FOLLOWS_LIST = "follows_list"
+    const val LESSEE_HOME = "lessee_home"
     const val LESSOR_FOLLOWERS = "lessor_followers"
     const val LESSOR_PROFILE = "lessor_profile"
 
     const val ADD_PROPERTY = "add_property"
     const val MY_PROPERTIES = "my_properties"
+    const val LESSEE_PROFILE = "lessee_profile"
+    const val LESSEE_SEARCH = "lessee_search"
     
     // Grafos
     const val AUTH_GRAPH = "auth_graph"
