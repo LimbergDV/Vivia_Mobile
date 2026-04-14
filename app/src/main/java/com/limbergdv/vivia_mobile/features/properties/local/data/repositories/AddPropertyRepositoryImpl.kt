@@ -61,48 +61,7 @@ class AddPropertyRepositoryImpl @Inject constructor(
         }
 
         val createdProperty = createResponse.data.toDomain()
-        val propertyId = createdProperty.id
-
-        Log.d("VIVIA_PROPERTY_DEBUG", "Propiedad creada con id: '$propertyId'")
-        Log.d("VIVIA_PROPERTY_DEBUG", "¿propertyId está en blanco? ${propertyId.isBlank()}")
-
-        // ── Paso 2: Subir imágenes si las hay ────────────────────────────────
-        if (property.imageUris.isNotEmpty() && propertyId.isNotBlank()) {
-            Log.d("VIVIA_PROPERTY_DEBUG", "=== Paso 2: Subiendo ${property.imageUris.size} imágenes a /properties/$propertyId/images ===")
-
-            val imageParts = property.imageUris.mapNotNull { uriString ->
-                uriToMultipart(uriString)
-            }
-
-            Log.d("VIVIA_PROPERTY_DEBUG", "Parts generados: ${imageParts.size}")
-
-            if (imageParts.isNotEmpty()) {
-                val imageResponse = api.uploadImages(
-                    propertyId = propertyId,
-                    images     = imageParts
-                )
-
-                Log.d("VIVIA_PROPERTY_DEBUG", "HTTP code: ${imageResponse.code()}")
-
-                if (imageResponse.isSuccessful) {
-                    val body = imageResponse.body()
-                    Log.d("VIVIA_PROPERTY_DEBUG", "Imágenes subidas exitosamente: ${body?.success}")
-                    Log.d("VIVIA_PROPERTY_DEBUG", "Message: ${body?.message}")
-
-                    if (body?.success == true && body.data != null) {
-                        return body.data.toDomain()
-                    }
-                } else {
-                    // ── Logs detallados para diagnosticar el 403 ─────────────
-                    val errorBody = imageResponse.errorBody()?.string()
-                    Log.e("VIVIA_PROPERTY_DEBUG", "Error HTTP ${imageResponse.code()} subiendo imágenes")
-                    Log.e("VIVIA_PROPERTY_DEBUG", "Error body: $errorBody")
-                    Log.e("VIVIA_PROPERTY_DEBUG", "URL llamada: ${imageResponse.raw().request.url}")
-                    Log.e("VIVIA_PROPERTY_DEBUG", "Headers enviados: ${imageResponse.raw().request.headers}")
-                    Log.e("VIVIA_PROPERTY_DEBUG", "Response headers: ${imageResponse.headers()}")
-                }
-            }
-        }
+        Log.d("VIVIA_PROPERTY_DEBUG", "Propiedad creada con id: '${createdProperty.id}'")
 
         return createdProperty
     }

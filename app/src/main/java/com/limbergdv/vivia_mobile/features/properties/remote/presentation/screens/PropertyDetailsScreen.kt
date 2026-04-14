@@ -21,6 +21,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -144,7 +145,9 @@ fun PropertyImageCarousel(
                     model = imageUrls[page],
                     contentDescription = null,
                     modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop
+                    contentScale = ContentScale.Crop,
+                    placeholder = painterResource(com.limbergdv.vivia_mobile.R.drawable.ic_vivia_logo_only),
+                    error = painterResource(com.limbergdv.vivia_mobile.R.drawable.ic_vivia_logo_only)
                 )
             }
             

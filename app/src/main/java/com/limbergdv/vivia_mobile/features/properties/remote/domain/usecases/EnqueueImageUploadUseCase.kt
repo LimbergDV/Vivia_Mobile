@@ -25,9 +25,9 @@ class EnqueueImageUploadUseCase @Inject constructor(
             )
         }
 
-        // 2. Configuramos restricciones (Solo con Internet)
+        // 2. Configuramos restricciones (Solo con WIFI)
         val constraints = Constraints.Builder()
-            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .setRequiredNetworkType(NetworkType.UNMETERED)
             .build()
 
         // 3. Encolamos el trabajo
