@@ -5,4 +5,5 @@ data class Lessor(
     val firstName: String,
     val lastName: String,
     val companyName: String,
+    val phoneNumber: String
 )

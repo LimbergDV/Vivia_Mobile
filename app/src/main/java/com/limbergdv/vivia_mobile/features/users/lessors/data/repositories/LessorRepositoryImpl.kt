@@ -113,4 +113,22 @@ class LessorRepositoryImpl @Inject constructor(
             Result.failure(e)
         }
     }
+
+    override suspend fun getMe(): Result<Lessor> {
+        return try {
+            val response = api.getMe()
+            if (response.isSuccessful) {
+                val body = response.body()
+                if (body?.success == true && body.data != null) {
+                    Result.success(body.data.toDomain())
+                } else {
+                    Result.failure(Exception(body?.message ?: "Error al obtener el perfil"))
+                }
+            } else {
+                Result.failure(Exception("Error HTTP ${response.code()}"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }

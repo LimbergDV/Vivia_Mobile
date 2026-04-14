@@ -18,4 +18,6 @@ interface LessorRepository {
     ): Result<Unit>
 
     suspend fun getAllLessors(): Result<List<Lessor>>
+
+    suspend fun getMe(): Result<Lessor>
 }
