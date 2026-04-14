@@ -1,6 +1,7 @@
 package com.limbergdv.vivia_mobile.features.auth.data.repositories
 
 import android.util.Log
+import com.limbergdv.vivia_mobile.core.database.AppDatabase
 import com.limbergdv.vivia_mobile.core.session.TokenDataStore
 import com.limbergdv.vivia_mobile.features.auth.data.datasources.remote.api.AuthApi
 import com.limbergdv.vivia_mobile.features.auth.data.datasources.remote.dtos.LoginRequestDto
@@ -16,6 +17,7 @@ import javax.inject.Inject
 class AuthRepositoryImpl @Inject constructor(
     private val authApi: AuthApi,
     private val tokenDataStore: TokenDataStore,
+    private val database: AppDatabase,
 ) : AuthRepository {
 
     override suspend fun loginTraditional(identifier: String, password: String): Result<AuthToken> {
@@ -132,6 +134,7 @@ class AuthRepositoryImpl @Inject constructor(
             val response = authApi.logout()
             if (response.isSuccessful) {
                 tokenDataStore.clearTokens()
+                database.clearAllTables()
                 Result.success(Unit)
             } else {
                 Result.failure(Exception("Error al cerrar sesión (HTTP ${response.code()})"))

@@ -17,4 +17,7 @@ interface PropertyDao {
 
     @Query("SELECT * FROM properties WHERE id = :id")
     fun observeById(id: String): Flow<PropertyEntity>
+
+    @Query("DELETE FROM properties")
+    suspend fun deleteAll()
 }

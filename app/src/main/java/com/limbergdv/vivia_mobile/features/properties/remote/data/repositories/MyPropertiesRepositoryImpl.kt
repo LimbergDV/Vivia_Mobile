@@ -43,6 +43,7 @@ class MyPropertiesRepositoryImpl @Inject constructor(
                 Log.d("SyncProperties", "Propiedades recibidas: ${dtos.size}")
 
                 val entities = dtos.map { it.toEntity() }
+                propertyDao.deleteAll()
                 propertyDao.insertAll(entities)
                 Log.d("SyncProperties", "Propiedades guardadas en Room: ${entities.size}")
 
