@@ -16,6 +16,7 @@ object AppRoutes {
     const val ADD_PROPERTY = "add_property"
     const val MY_PROPERTIES = "my_properties"
     const val LESSEE_PROFILE = "lessee_profile"
+    const val LESSEE_SEARCH = "lessee_search"
     
     // Grafos
     const val AUTH_GRAPH = "auth_graph"

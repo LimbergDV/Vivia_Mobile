@@ -63,7 +63,7 @@ fun LesseePropertiesScreen(
                 currentRoute = "home",
                 onHomeClick = {},
                 onFollowsClick = { onNavigate(AppRoutes.FOLLOWS_LIST) },
-                onSearchClick = { onNavigate("search") },
+                onSearchClick = { onNavigate(AppRoutes.LESSEE_SEARCH) },
                 onProfileClick = { onNavigate(AppRoutes.LESSEE_PROFILE) },
                 onLogoutClick = { showLogoutDialog = true }
             )

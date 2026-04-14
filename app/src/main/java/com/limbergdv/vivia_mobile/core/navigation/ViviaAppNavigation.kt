@@ -13,6 +13,7 @@ import com.limbergdv.vivia_mobile.features.follows.presentation.screens.Follower
 import com.limbergdv.vivia_mobile.features.follows.presentation.screens.FollowsScreen
 import com.limbergdv.vivia_mobile.features.properties.remote.presentation.screens.LesseePropertiesScreen
 import com.limbergdv.vivia_mobile.features.users.lessees.presentation.screens.LesseeProfileScreen
+import com.limbergdv.vivia_mobile.features.properties.remote.presentation.screens.LesseeSearchScreen
 import com.limbergdv.vivia_mobile.features.users.lessors.presentation.screens.LessorProfileScreen
 import com.limbergdv.vivia_mobile.features.home.presentation.screens.HomeScreen
 import com.limbergdv.vivia_mobile.features.home.presentation.screens.LessorOptionScreen
@@ -172,6 +173,13 @@ fun ViviaAppNavigation(
 
             composable(AppRoutes.LESSEE_PROFILE) {
                 LesseeProfileScreen(
+                    onNavigate = { destination -> appNavigator.navigate(destination) },
+                    onLogout = {}
+                )
+            }
+
+            composable(AppRoutes.LESSEE_SEARCH) {
+                LesseeSearchScreen(
                     onNavigate = { destination -> appNavigator.navigate(destination) },
                     onLogout = {}
                 )
