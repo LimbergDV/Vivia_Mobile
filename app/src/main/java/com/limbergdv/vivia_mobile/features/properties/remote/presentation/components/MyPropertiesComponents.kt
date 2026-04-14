@@ -20,7 +20,9 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.painterResource
 import coil.compose.AsyncImage
+import com.limbergdv.vivia_mobile.R
 import com.limbergdv.vivia_mobile.features.properties.local.domain.entities.ListingType
 import com.limbergdv.vivia_mobile.features.properties.local.domain.entities.Property
 
@@ -58,7 +60,9 @@ fun PropertyCard(
                         model = property.imageUris.first(),
                         contentDescription = null,
                         modifier = Modifier.fillMaxSize(),
-                        contentScale = ContentScale.Crop
+                        contentScale = ContentScale.Crop,
+                        placeholder = painterResource(R.drawable.ic_vivia_logo_only),
+                        error = painterResource(R.drawable.ic_vivia_logo_only)
                     )
                 } else {
                     Icon(

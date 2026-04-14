@@ -22,7 +22,7 @@ import com.limbergdv.vivia_mobile.core.database.entities.LesseePropertyEntity
         PendingImageEntity::class,
         LesseePropertyEntity::class
     ],
-    version = 4,
+    version = 5,
     exportSchema = false
 )
 @TypeConverters(PropertyConverters::class)

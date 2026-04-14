@@ -24,7 +24,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.ui.res.painterResource
 import coil.compose.AsyncImage
+import com.limbergdv.vivia_mobile.R
 import com.limbergdv.vivia_mobile.core.navigation.AppRoutes
 import com.limbergdv.vivia_mobile.features.properties.remote.domain.entities.Property
 import com.limbergdv.vivia_mobile.features.properties.remote.presentation.components.ViviaBottomBar
@@ -184,7 +186,9 @@ fun PropertyItem(
                         model              = property.imageUrls.first(),
                         contentDescription = property.title,
                         modifier           = Modifier.fillMaxSize(),
-                        contentScale       = ContentScale.Crop
+                        contentScale       = ContentScale.Crop,
+                        placeholder        = painterResource(R.drawable.ic_vivia_logo_only),
+                        error              = painterResource(R.drawable.ic_vivia_logo_only)
                     )
                 } else {
                     // Placeholder cuando no hay imagen

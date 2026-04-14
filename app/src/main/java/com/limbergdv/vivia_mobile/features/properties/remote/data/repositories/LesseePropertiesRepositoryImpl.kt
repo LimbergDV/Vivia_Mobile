@@ -28,8 +28,16 @@ class LesseePropertiesRepositoryImpl @Inject constructor(
         if (wrapper?.success != true || wrapper.data == null) {
             return Result.failure(Exception(wrapper?.message ?: "Respuesta vacía"))
         }
-        val entities = (wrapper.data.content ?: emptyList()).map { it.toLesseeEntity() }
-        Log.d("LesseeSync", "Propiedades recibidas: ${entities.size}")
+
+        val dtos = wrapper.data.content ?: emptyList()
+        Log.d("LesseeSync", "Propiedades recibidas: ${dtos.size}")
+        
+        dtos.forEachIndexed { index, property ->
+            Log.d("LesseeSync", "Propiedad [$index]: ID=${property.id}, Title=${property.title}")
+            Log.d("LesseeSync", "Images [${property.imageUrls.size}]: ${property.imageUrls}")
+        }
+
+        val entities = dtos.map { it.toLesseeEntity() }
         dao.replaceAll(entities)
         Result.success(Unit)
     } catch (e: Exception) {
