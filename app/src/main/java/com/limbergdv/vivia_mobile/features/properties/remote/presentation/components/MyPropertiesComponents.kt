@@ -155,10 +155,10 @@ fun PropertyChip(
 fun ViviaBottomBar(
     currentRoute: String,
     onHomeClick: () -> Unit,
-    onSavedClick: () -> Unit,
+    onProfileClick: () -> Unit,
     onAddClick: () -> Unit,
-    onMessagesClick: () -> Unit,
-    onSettingsClick: () -> Unit
+    onFollowersClick: () -> Unit,
+    onLogoutClick: () -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -177,13 +177,13 @@ fun ViviaBottomBar(
         ) {
             NavBarItem(
                 icon = Icons.Outlined.Home,
-                isSelected = currentRoute == "home",
+                isSelected = currentRoute == "myProperties",
                 onClick = onHomeClick
             )
             NavBarItem(
-                icon = Icons.Outlined.Bookmark,
-                isSelected = currentRoute == "saved",
-                onClick = onSavedClick
+                icon = Icons.Outlined.Person,
+                isSelected = currentRoute == "profile",
+                onClick = onProfileClick
             )
 
             // Botón central +
@@ -204,14 +204,14 @@ fun ViviaBottomBar(
             }
 
             NavBarItem(
-                icon = Icons.Outlined.ChatBubbleOutline,
-                isSelected = currentRoute == "messages",
-                onClick = onMessagesClick
+                icon = Icons.Outlined.Group,
+                isSelected = currentRoute == "followers",
+                onClick = onFollowersClick
             )
             NavBarItem(
-                icon = Icons.Outlined.Settings,
-                isSelected = currentRoute == "settings",
-                onClick = onSettingsClick
+                icon = Icons.Outlined.ExitToApp,
+                isSelected = currentRoute == "logout",
+                onClick = onLogoutClick
             )
         }
     }

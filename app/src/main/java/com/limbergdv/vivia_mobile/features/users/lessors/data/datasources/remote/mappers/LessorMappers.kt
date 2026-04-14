@@ -8,6 +8,7 @@ fun LessorResponseDto.toDomain(): Lessor {
         id = id,
         firstName = firstName,
         lastName = lastName,
-        companyName = companyName
+        companyName = companyName,
+        phoneNumber = phoneNumber ?: ""
     )
 }

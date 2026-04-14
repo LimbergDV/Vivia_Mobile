@@ -9,7 +9,9 @@ import androidx.navigation.navigation
 import com.limbergdv.vivia_mobile.core.session.TokenDataStore
 import com.limbergdv.vivia_mobile.features.auth.presentation.screens.LoginLesseeScreen
 import com.limbergdv.vivia_mobile.features.auth.presentation.screens.LoginLessorScreen
+import com.limbergdv.vivia_mobile.features.follows.presentation.screens.FollowersScreen
 import com.limbergdv.vivia_mobile.features.follows.presentation.screens.FollowsScreen
+import com.limbergdv.vivia_mobile.features.users.lessors.presentation.screens.LessorProfileScreen
 import com.limbergdv.vivia_mobile.features.home.presentation.screens.HomeScreen
 import com.limbergdv.vivia_mobile.features.home.presentation.screens.LessorOptionScreen
 import com.limbergdv.vivia_mobile.features.properties.local.presentation.screens.AddPropertyScreen
@@ -143,6 +145,21 @@ fun ViviaAppNavigation(
                     onLogout = {
                         // No hacemos nada aquí, el MainActivity manejará la navegación
                         // al observar el cambio en TokenDataStore
+                    }
+                )
+            }
+
+            composable(AppRoutes.LESSOR_FOLLOWERS) {
+                FollowersScreen(
+                    onNavigateBack = { appNavigator.popBackStack() }
+                )
+            }
+
+            composable(AppRoutes.LESSOR_PROFILE) {
+                LessorProfileScreen(
+                    onNavigate = { destination -> appNavigator.navigate(destination) },
+                    onLogout = {
+                        // El MainActivity manejará el logout al observar el cambio de tokens
                     }
                 )
             }

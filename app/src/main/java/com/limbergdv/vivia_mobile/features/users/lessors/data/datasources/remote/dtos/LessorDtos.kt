@@ -28,5 +28,6 @@ data class LessorResponseDto(
     val id: String,
     val firstName: String,
     val lastName: String,
-    val companyName: String
+    val companyName: String,
+    val phoneNumber: String? = null
 )

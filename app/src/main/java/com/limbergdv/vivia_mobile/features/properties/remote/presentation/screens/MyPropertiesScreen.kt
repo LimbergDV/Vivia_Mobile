@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
+import com.limbergdv.vivia_mobile.core.navigation.AppRoutes
 import com.limbergdv.vivia_mobile.features.properties.remote.domain.entities.Property
 import com.limbergdv.vivia_mobile.features.properties.remote.presentation.components.ViviaBottomBar
 import com.limbergdv.vivia_mobile.features.properties.remote.presentation.viewmodels.MyPropertiesViewModel
@@ -71,11 +72,11 @@ fun MyPropertiesScreen(
         bottomBar = {
             ViviaBottomBar(
                 currentRoute    = "myProperties",
-                onHomeClick     = { onNavigate("home") },
-                onSavedClick    = { onNavigate("saved") },
+                onHomeClick     = { onNavigate(AppRoutes.MY_PROPERTIES) },
+                onProfileClick  = { onNavigate(AppRoutes.LESSOR_PROFILE) },
                 onAddClick      = onAddPropertyClick,
-                onMessagesClick = { onNavigate("messages") },
-                onSettingsClick = { showLogoutDialog = true }
+                onFollowersClick = { onNavigate(AppRoutes.LESSOR_FOLLOWERS) },
+                onLogoutClick = { showLogoutDialog = true }
             )
         },
         floatingActionButton = {

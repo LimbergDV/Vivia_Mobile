@@ -19,4 +19,7 @@ interface LessorApi {
 
     @GET("/lessors")
     suspend fun getAllLessors(): Response<BaseResponse<List<LessorResponseDto>>>
+
+    @GET("/lessors/me")
+    suspend fun getMe(): Response<BaseResponse<LessorResponseDto>>
 }
