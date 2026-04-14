@@ -11,6 +11,9 @@ import com.limbergdv.vivia_mobile.features.auth.presentation.screens.LoginLessee
 import com.limbergdv.vivia_mobile.features.auth.presentation.screens.LoginLessorScreen
 import com.limbergdv.vivia_mobile.features.follows.presentation.screens.FollowersScreen
 import com.limbergdv.vivia_mobile.features.follows.presentation.screens.FollowsScreen
+import com.limbergdv.vivia_mobile.features.properties.remote.presentation.screens.LesseePropertiesScreen
+import com.limbergdv.vivia_mobile.features.users.lessees.presentation.screens.LesseeProfileScreen
+import com.limbergdv.vivia_mobile.features.properties.remote.presentation.screens.LesseeSearchScreen
 import com.limbergdv.vivia_mobile.features.users.lessors.presentation.screens.LessorProfileScreen
 import com.limbergdv.vivia_mobile.features.home.presentation.screens.HomeScreen
 import com.limbergdv.vivia_mobile.features.home.presentation.screens.LessorOptionScreen
@@ -118,7 +121,7 @@ fun ViviaAppNavigation(
 
         // Grafo Principal (Usuario logueado)
         val homeGraphStart = when (userType) {
-            TokenDataStore.UserType.LESSEE -> AppRoutes.FOLLOWS_LIST
+            TokenDataStore.UserType.LESSEE -> AppRoutes.LESSEE_HOME
             TokenDataStore.UserType.LESSOR -> AppRoutes.MY_PROPERTIES
             null -> AppRoutes.MY_PROPERTIES // Default
         }
@@ -139,13 +142,17 @@ fun ViviaAppNavigation(
                 )
             }
 
+            composable(AppRoutes.LESSEE_HOME) {
+                LesseePropertiesScreen(
+                    onNavigate = { destination -> appNavigator.navigate(destination) },
+                    onLogout = {}
+                )
+            }
+
             composable(AppRoutes.FOLLOWS_LIST) {
                 FollowsScreen(
                     onNavigate = { destination -> appNavigator.navigate(destination) },
-                    onLogout = {
-                        // No hacemos nada aquí, el MainActivity manejará la navegación
-                        // al observar el cambio en TokenDataStore
-                    }
+                    onLogout = {}
                 )
             }
 
@@ -161,6 +168,20 @@ fun ViviaAppNavigation(
                     onLogout = {
                         // El MainActivity manejará el logout al observar el cambio de tokens
                     }
+                )
+            }
+
+            composable(AppRoutes.LESSEE_PROFILE) {
+                LesseeProfileScreen(
+                    onNavigate = { destination -> appNavigator.navigate(destination) },
+                    onLogout = {}
+                )
+            }
+
+            composable(AppRoutes.LESSEE_SEARCH) {
+                LesseeSearchScreen(
+                    onNavigate = { destination -> appNavigator.navigate(destination) },
+                    onLogout = {}
                 )
             }
 

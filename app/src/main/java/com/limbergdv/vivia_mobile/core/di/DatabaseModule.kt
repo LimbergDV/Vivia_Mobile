@@ -6,6 +6,7 @@ import com.limbergdv.vivia_mobile.core.database.AppDatabase
 import com.limbergdv.vivia_mobile.core.database.dao.PendingImageDao
 import com.limbergdv.vivia_mobile.core.database.dao.PropertyDao
 import com.limbergdv.vivia_mobile.core.database.dao.PropertyDraftDao
+import com.limbergdv.vivia_mobile.core.database.dao.LesseePropertyDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -41,4 +42,7 @@ object DatabaseModule {
 
     @Provides
     fun providePendingImageDao(db: AppDatabase): PendingImageDao = db.pendingImageDao()
+
+    @Provides
+    fun provideLesseePropertyDao(db: AppDatabase): LesseePropertyDao = db.lesseePropertyDao()
 }

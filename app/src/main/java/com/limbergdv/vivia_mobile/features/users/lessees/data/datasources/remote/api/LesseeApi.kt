@@ -28,4 +28,7 @@ interface LesseeApi {
 
     @GET("/lessees/follows")
     suspend fun getLessorsWithFollowStatus(): Response<BaseResponse<List<LessorWithFollowStatusDto>>>
+
+    @GET("/lessees/me")
+    suspend fun getLesseeProfile(): Response<BaseResponse<LesseeRegistrationResponseDto>>
 }

@@ -9,17 +9,20 @@ import com.limbergdv.vivia_mobile.core.database.converters.PropertyConverters
 import com.limbergdv.vivia_mobile.core.database.dao.PendingImageDao
 import com.limbergdv.vivia_mobile.core.database.dao.PropertyDao
 import com.limbergdv.vivia_mobile.core.database.dao.PropertyDraftDao
+import com.limbergdv.vivia_mobile.core.database.dao.LesseePropertyDao
 import com.limbergdv.vivia_mobile.core.database.entities.PendingImageEntity
 import com.limbergdv.vivia_mobile.core.database.entities.PropertyDraftEntity
 import com.limbergdv.vivia_mobile.core.database.entities.PropertyEntity
+import com.limbergdv.vivia_mobile.core.database.entities.LesseePropertyEntity
 
 @Database(
     entities = [
         PropertyDraftEntity::class,
         PropertyEntity::class,
-        PendingImageEntity::class
+        PendingImageEntity::class,
+        LesseePropertyEntity::class
     ],
-    version = 4,         // ← subimos a 4
+    version = 4,
     exportSchema = false
 )
 @TypeConverters(PropertyConverters::class)
@@ -28,10 +31,10 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun propertyDraftDao(): PropertyDraftDao
     abstract fun propertyDao(): PropertyDao
     abstract fun pendingImageDao(): PendingImageDao
+    abstract fun lesseePropertyDao(): LesseePropertyDao
 
     companion object {
 
-        // version 1 → 2: se agregó address y tabla properties con address como String
         val MIGRATION_1_2 = object : Migration(1, 2) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 database.execSQL(
@@ -62,14 +65,9 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
-        // version 2 → 3: address pasa de String suelto a objeto @Embedded con prefijo addr_
-        // Renombramos la tabla vieja, creamos la nueva con la estructura correcta y copiamos datos
         val MIGRATION_2_3 = object : Migration(2, 3) {
             override fun migrate(database: SupportSQLiteDatabase) {
-                // 1. Renombrar tabla vieja
                 database.execSQL("ALTER TABLE properties RENAME TO properties_old")
-
-                // 2. Crear tabla nueva con columnas addr_* en lugar de address/city/state/neighborhood sueltos
                 database.execSQL(
                     """
                     CREATE TABLE IF NOT EXISTS `properties` (
@@ -92,8 +90,6 @@ abstract class AppDatabase : RoomDatabase() {
                     )
                     """.trimIndent()
                 )
-
-                // 3. Copiar datos existentes mapeando columnas viejas a las nuevas
                 database.execSQL(
                     """
                     INSERT INTO properties (id, title, description, price,
@@ -107,14 +103,13 @@ abstract class AppDatabase : RoomDatabase() {
                     FROM properties_old
                     """.trimIndent()
                 )
-
-                // 4. Eliminar tabla vieja
                 database.execSQL("DROP TABLE properties_old")
             }
         }
 
         val MIGRATION_3_4 = object : Migration(3, 4) {
             override fun migrate(database: SupportSQLiteDatabase) {
+                // Agregar tabla pending_images
                 database.execSQL(
                     """
                     CREATE TABLE IF NOT EXISTS `pending_images` (
@@ -122,6 +117,29 @@ abstract class AppDatabase : RoomDatabase() {
                         `propertyId` TEXT NOT NULL, 
                         `imageUri` TEXT NOT NULL, 
                         `createdAt` INTEGER NOT NULL
+                    )
+                    """.trimIndent()
+                )
+                // Agregar tabla tenant_properties
+                database.execSQL(
+                    """
+                    CREATE TABLE IF NOT EXISTS `tenant_properties` (
+                        `id` TEXT NOT NULL,
+                        `title` TEXT NOT NULL,
+                        `description` TEXT NOT NULL,
+                        `price` REAL NOT NULL,
+                        `addr_address` TEXT NOT NULL DEFAULT '',
+                        `addr_city` TEXT NOT NULL DEFAULT '',
+                        `addr_state` TEXT NOT NULL DEFAULT '',
+                        `addr_neighborhood` TEXT NOT NULL DEFAULT '',
+                        `departmentType` TEXT NOT NULL,
+                        `area` REAL NOT NULL,
+                        `roomsNumber` INTEGER NOT NULL,
+                        `bathroomsNumber` INTEGER NOT NULL,
+                        `parkingNumber` INTEGER NOT NULL,
+                        `lessorId` TEXT NOT NULL,
+                        `imageUrls` TEXT NOT NULL,
+                        PRIMARY KEY(`id`)
                     )
                     """.trimIndent()
                 )
