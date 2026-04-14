@@ -6,9 +6,11 @@ import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.limbergdv.vivia_mobile.core.database.converters.PropertyConverters
+import com.limbergdv.vivia_mobile.core.database.dao.PendingImageDao
 import com.limbergdv.vivia_mobile.core.database.dao.PropertyDao
 import com.limbergdv.vivia_mobile.core.database.dao.PropertyDraftDao
 import com.limbergdv.vivia_mobile.core.database.dao.LesseePropertyDao
+import com.limbergdv.vivia_mobile.core.database.entities.PendingImageEntity
 import com.limbergdv.vivia_mobile.core.database.entities.PropertyDraftEntity
 import com.limbergdv.vivia_mobile.core.database.entities.PropertyEntity
 import com.limbergdv.vivia_mobile.core.database.entities.LesseePropertyEntity
@@ -17,7 +19,8 @@ import com.limbergdv.vivia_mobile.core.database.entities.LesseePropertyEntity
     entities = [
         PropertyDraftEntity::class,
         PropertyEntity::class,
-        LesseePropertyEntity::class,
+        PendingImageEntity::class,
+        LesseePropertyEntity::class
     ],
     version = 4,
     exportSchema = false
@@ -27,11 +30,11 @@ abstract class AppDatabase : RoomDatabase() {
 
     abstract fun propertyDraftDao(): PropertyDraftDao
     abstract fun propertyDao(): PropertyDao
+    abstract fun pendingImageDao(): PendingImageDao
     abstract fun lesseePropertyDao(): LesseePropertyDao
 
     companion object {
 
-        // version 1 → 2: se agregó address y tabla properties con address como String
         val MIGRATION_1_2 = object : Migration(1, 2) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 database.execSQL(
@@ -62,14 +65,9 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
-        // version 2 → 3: address pasa de String suelto a objeto @Embedded con prefijo addr_
-        // Renombramos la tabla vieja, creamos la nueva con la estructura correcta y copiamos datos
         val MIGRATION_2_3 = object : Migration(2, 3) {
             override fun migrate(database: SupportSQLiteDatabase) {
-                // 1. Renombrar tabla vieja
                 database.execSQL("ALTER TABLE properties RENAME TO properties_old")
-
-                // 2. Crear tabla nueva con columnas addr_* en lugar de address/city/state/neighborhood sueltos
                 database.execSQL(
                     """
                     CREATE TABLE IF NOT EXISTS `properties` (
@@ -92,8 +90,6 @@ abstract class AppDatabase : RoomDatabase() {
                     )
                     """.trimIndent()
                 )
-
-                // 3. Copiar datos existentes mapeando columnas viejas a las nuevas
                 database.execSQL(
                     """
                     INSERT INTO properties (id, title, description, price,
@@ -107,15 +103,24 @@ abstract class AppDatabase : RoomDatabase() {
                     FROM properties_old
                     """.trimIndent()
                 )
-
-                // 4. Eliminar tabla vieja
                 database.execSQL("DROP TABLE properties_old")
             }
         }
 
-        // version 3 → 4: se agrega tabla tenant_properties para arrendatarios
         val MIGRATION_3_4 = object : Migration(3, 4) {
             override fun migrate(database: SupportSQLiteDatabase) {
+                // Agregar tabla pending_images
+                database.execSQL(
+                    """
+                    CREATE TABLE IF NOT EXISTS `pending_images` (
+                        `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, 
+                        `propertyId` TEXT NOT NULL, 
+                        `imageUri` TEXT NOT NULL, 
+                        `createdAt` INTEGER NOT NULL
+                    )
+                    """.trimIndent()
+                )
+                // Agregar tabla tenant_properties
                 database.execSQL(
                     """
                     CREATE TABLE IF NOT EXISTS `tenant_properties` (

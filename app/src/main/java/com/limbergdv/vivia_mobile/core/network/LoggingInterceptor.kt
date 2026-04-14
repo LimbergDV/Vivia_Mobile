@@ -46,6 +46,23 @@ class LoggingInterceptor : Interceptor {
         // Log de la respuesta
         Log.d("HTTP", "╔════════════════════════════════════════════════════")
         Log.d("HTTP", "║ RESPONSE: ${response.code} ${response.message}")
+
+        // Log de la respuesta body
+        val responseBody = response.body
+        if (responseBody != null) {
+            val source = responseBody.source()
+            source.request(Long.MAX_VALUE) // Buffer the entire body.
+            val buffer = source.buffer
+            val charset = Charset.forName("UTF-8")
+            val content = buffer.clone().readString(charset)
+
+            Log.d("HTTP", "╟────────────────────────────────────────────────────")
+            Log.d("HTTP", "║ RESPONSE BODY:")
+            content.lines().forEach { line ->
+                Log.d("HTTP", "║ $line")
+            }
+        }
+
         Log.d("HTTP", "╚════════════════════════════════════════════════════")
 
         return response

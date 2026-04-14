@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.limbergdv.vivia_mobile.features.properties.local.presentation.components.*
 
-private val BEDROOM_OPTIONS = listOf("1","2","3","4","5","6","7","8","9","10","10+")
+private val BEDROOM_OPTIONS = listOf("1","2","3","4","5","6","6+")
 private val BATHROOM_OPTIONS = listOf("1","2","3","4","5","6","6+")
 private val PARKING_OPTIONS  = listOf("1","2","3","4","5","6","6+")
 

@@ -1,0 +1,130 @@
+[
+  {
+    "state": "Aguascalientes",
+    "municipalities": ["Aguascalientes", "Asientos", "Calvillo", "Cosío", "Jesús María", "Pabellón de Arteaga", "Rincón de Romos", "San José de Gracia", "Tepezalá", "El Llano", "San Francisco de los Romo"]
+  },
+  {
+    "state": "Baja California",
+    "municipalities": ["Ensenada", "Mexicali", "Tecate", "Tijuana", "Playas de Rosarito", "San Quintín", "San Felipe"]
+  },
+  {
+    "state": "Baja California Sur",
+    "municipalities": ["Comondú", "Mulegé", "La Paz", "Los Cabos", "Loreto"]
+  },
+  {
+    "state": "Campeche",
+    "municipalities": ["Calkiní", "Campeche", "Carmen", "Champotón", "Hecelchakán", "Hopelchén", "Palizada", "Tenabo", "Escárcega", "Calakmul", "Candelaria", "Seybaplaya", "Dzitbalché"]
+  },
+  {
+    "state": "Chiapas",
+    "municipalities": ["Tuxtla Gutiérrez", "Tapachula", "San Cristóbal de las Casas", "Palenque", "Comitán de Domínguez"]
+  },
+  {
+    "state": "Chihuahua",
+    "municipalities": ["Chihuahua", "Juárez", "Delicias", "Cuauhtémoc", "Parral", "Nuevo Casas Grandes"]
+  },
+  {
+    "state": "Ciudad de México",
+    "municipalities": ["Álvaro Obregón", "Azcapotzalco", "Benito Juárez", "Coyoacán", "Cuajimalpa de Morelos", "Cuauhtémoc", "Gustavo A. Madero", "Iztacalco", "Iztapalapa", "La Magdalena Contreras", "Miguel Hidalgo", "Milpa Alta", "Tláhuac", "Tlalpan", "Venustiano Carranza", "Xochimilco"]
+  },
+  {
+    "state": "Coahuila",
+    "municipalities": ["Saltillo", "Torreón", "Monclova", "Piedras Negras", "Acuña"]
+  },
+  {
+    "state": "Colima",
+    "municipalities": ["Colima", "Manzanillo", "Tecomán", "Villa de Álvarez"]
+  },
+  {
+    "state": "Durango",
+    "municipalities": ["Durango", "Gómez Palacio", "Lerdo", "Pueblo Nuevo"]
+  },
+  {
+    "state": "Estado de México",
+    "municipalities": ["Toluca", "Ecatepec de Morelos", "Nezahualcóyotl", "Naucalpan de Juárez", "Tlalnepantla de Baz", "Huixquilucan", "Metepec"]
+  },
+  {
+    "state": "Guanajuato",
+    "municipalities": ["Guanajuato", "León", "Irapuato", "Celaya", "Salamanca", "San Miguel de Allende"]
+  },
+  {
+    "state": "Guerrero",
+    "municipalities": ["Chilpancingo de los Bravo", "Acapulco de Juárez", "Iguala de la Independencia", "Taxco de Alarcón"]
+  },
+  {
+    "state": "Hidalgo",
+    "municipalities": ["Pachuca de Soto", "Tulancingo de Bravo", "Tula de Allende", "Mineral de la Reforma"]
+  },
+  {
+    "state": "Jalisco",
+    "municipalities": ["Guadalajara", "Zapopan", "Tlaquepaque", "Tonalá", "Tlajomulco de Zúñiga", "Puerto Vallarta"]
+  },
+  {
+    "state": "Michoacán",
+    "municipalities": ["Morelia", "Uruapan", "Zamora", "Lázaro Cárdenas", "Pátzcuaro"]
+  },
+  {
+    "state": "Morelos",
+    "municipalities": ["Cuernavaca", "Jiutepec", "Cuautla", "Temixco"]
+  },
+  {
+    "state": "Nayarit",
+    "municipalities": ["Tepic", "Bahía de Banderas", "Xalisco"]
+  },
+  {
+    "state": "Nuevo León",
+    "municipalities": ["Monterrey", "Guadalupe", "San Nicolás de los Garza", "San Pedro Garza García", "Santa Catarina", "Apodaca", "Escobedo"]
+  },
+  {
+    "state": "Oaxaca",
+    "municipalities": ["Oaxaca de Juárez", "San Juan Bautista Tuxtepec", "Salina Cruz", "Juchitán de Zaragoza"]
+  },
+  {
+    "state": "Puebla",
+    "municipalities": ["Puebla de Zaragoza", "Tehuacán", "San Andrés Cholula", "San Pedro Cholula", "Atlixco"]
+  },
+  {
+    "state": "Querétaro",
+    "municipalities": ["Santiago de Querétaro", "San Juan del Río", "El Marqués", "Corregidora"]
+  },
+  {
+    "state": "Quintana Roo",
+    "municipalities": ["Chetumal", "Cancún", "Playa del Carmen", "Cozumel", "Tulum"]
+  },
+  {
+    "state": "San Luis Potosí",
+    "municipalities": ["San Luis Potosí", "Soledad de Graciano Sánchez", "Ciudad Valles", "Matehuala"]
+  },
+  {
+    "state": "Sinaloa",
+    "municipalities": ["Culiacán Rosales", "Mazatlán", "Los Mochis", "Guasave"]
+  },
+  {
+    "state": "Sonora",
+    "municipalities": ["Hermosillo", "Ciudad Obregón", "Nogales", "San Luis Río Colorado", "Navojoa", "Guaymas"]
+  },
+  {
+    "state": "Tabasco",
+    "municipalities": ["Villahermosa", "Cárdenas", "Comalcalco", "Huimanguillo"]
+  },
+  {
+    "state": "Tamaulipas",
+    "municipalities": ["Ciudad Victoria", "Reynosa", "Matamoros", "Nuevo Laredo", "Tampico", "Ciudad Madero", "Altamira"]
+  },
+  {
+    "state": "Tlaxcala",
+    "municipalities": ["Tlaxcala de Xicohténcatl", "Huamantla", "Apizaco"]
+  },
+  {
+    "state": "Veracruz",
+    "municipalities": ["Xalapa-Enríquez", "Veracruz", "Coatzacoalcos", "Boca del Río", "Orizaba", "Córdoba", "Tuxpan"]
+  },
+  {
+    "state": "Yucatán",
+    "municipalities": ["Mérida", "Kanasín", "Valladolid", "Tizimín", "Progreso"]
+  },
+  {
+    "state": "Zacatecas",
+    "municipalities": ["Zacatecas", "Guadalupe", "Fresnillo", "Jerez de García Salinas"]
+  }
+]
