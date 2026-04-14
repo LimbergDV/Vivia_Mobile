@@ -5,15 +5,19 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -83,7 +87,8 @@ fun <T> ViviaDropdown(
     label: String,
     itemLabel: (T) -> String,
     onItemSelected: (T) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -92,8 +97,8 @@ fun <T> ViviaDropdown(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(12.dp))
-                .background(ViviaGray)
-                .clickable { expanded = true }
+                .background(if (enabled) ViviaGray else ViviaGray.copy(alpha = 0.5f))
+                .clickable(enabled = enabled) { expanded = true }
                 .padding(horizontal = 16.dp, vertical = 14.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
@@ -101,27 +106,31 @@ fun <T> ViviaDropdown(
             Text(
                 text = selectedItem?.let { itemLabel(it) } ?: label,
                 color = if (selectedItem == null) Color.Gray else Color.Black,
-                fontSize = 15.sp
+                fontSize = 15.sp,
+                modifier = Modifier.alpha(if (enabled) 1f else 0.5f)
             )
             Icon(
                 imageVector = Icons.Default.KeyboardArrowDown,
                 contentDescription = null,
-                tint = Color.Gray
+                tint = Color.Gray,
+                modifier = Modifier.alpha(if (enabled) 1f else 0.5f)
             )
         }
 
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false }
-        ) {
-            items.forEach { item ->
-                DropdownMenuItem(
-                    text = { Text(itemLabel(item)) },
-                    onClick = {
-                        onItemSelected(item)
-                        expanded = false
-                    }
-                )
+        if (enabled) {
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                items.forEach { item ->
+                    DropdownMenuItem(
+                        text = { Text(itemLabel(item)) },
+                        onClick = {
+                            onItemSelected(item)
+                            expanded = false
+                        }
+                    )
+                }
             }
         }
     }
@@ -135,7 +144,8 @@ fun ViviaTextField(
     placeholder: String,
     modifier: Modifier = Modifier,
     singleLine: Boolean = true,
-    minLines: Int = 1
+    minLines: Int = 1,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default
 ) {
     TextField(
         value = value,
@@ -145,6 +155,7 @@ fun ViviaTextField(
         singleLine = singleLine,
         minLines = minLines,
         shape = RoundedCornerShape(12.dp),
+        keyboardOptions = keyboardOptions,
         colors = TextFieldDefaults.colors(
             focusedContainerColor = ViviaGray,
             unfocusedContainerColor = ViviaGray,
@@ -165,8 +176,9 @@ fun NumberSelector(
 ) {
     val rawValues = options.mapIndexed { index, label ->
         if (label.endsWith("+")) {
-            // "10+" → usamos el número base como valor
-            label.dropLast(1).toIntOrNull() ?: (index + 1)
+            // "6+" → usamos el número base + 1 como valor para diferenciarlo del "6"
+            val base = label.dropLast(1).toIntOrNull() ?: (index + 1)
+            base + 1
         } else {
             label.toIntOrNull() ?: (index + 1)
         }

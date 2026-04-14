@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.limbergdv.vivia_mobile.core.hardware.domain.CameraManager
+import com.limbergdv.vivia_mobile.core.network.MexicoLocationManager
 import com.limbergdv.vivia_mobile.features.properties.local.domain.entities.*
 import com.limbergdv.vivia_mobile.features.properties.local.domain.usecases.AddPropertyUseCases
 import com.limbergdv.vivia_mobile.features.properties.local.presentation.screens.AddPropertyUiState
@@ -19,7 +20,8 @@ import javax.inject.Inject
 @HiltViewModel
 class AddPropertyViewModel @Inject constructor(
     private val useCases: AddPropertyUseCases,
-    private val cameraManager: CameraManager
+    private val cameraManager: CameraManager,
+    private val locationManager: MexicoLocationManager
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AddPropertyUiState())
@@ -28,15 +30,28 @@ class AddPropertyViewModel @Inject constructor(
     private var pendingCameraUri: Uri? = null
 
     init {
+        loadMexicoLocations()
         loadDraft()
+    }
+
+    private fun loadMexicoLocations() {
+        val locations = locationManager.getMexicoLocations()
+        val states = locations.map { it.state }.sorted()
+        _uiState.update { it.copy(availableStates = states) }
     }
 
     // ── Borrador ──────────────────────────────────────────────────────────────
 
     private fun loadDraft() {
         useCases.getDraft().onEach { savedDraft ->
-            if (savedDraft != null && _uiState.value == AddPropertyUiState()) {
-                _uiState.value = savedDraft
+            if (savedDraft != null && _uiState.value.state.isEmpty()) { // Solo cargar si no hay datos actuales
+                _uiState.update { current ->
+                    savedDraft.copy(
+                        availableStates = current.availableStates,
+                        availableMunicipalities = locationManager.getMexicoLocations()
+                            .find { it.state == savedDraft.state }?.municipalities?.sorted() ?: emptyList()
+                    )
+                }
             }
         }.launchIn(viewModelScope)
     }
@@ -60,7 +75,16 @@ class AddPropertyViewModel @Inject constructor(
     }
 
     fun onStateChange(value: String) {
-        _uiState.update { it.copy(state = value) }
+        val municipalities = locationManager.getMexicoLocations()
+            .find { it.state == value }?.municipalities?.sorted() ?: emptyList()
+            
+        _uiState.update { 
+            it.copy(
+                state = value,
+                availableMunicipalities = municipalities,
+                city = "" // Reset city when state changes
+            ) 
+        }
         saveDraft()
     }
 

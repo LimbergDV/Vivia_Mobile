@@ -26,6 +26,10 @@ data class AddPropertyUiState(
     val selectedImages: List<Uri> = emptyList(),
     val uploadingImages: Set<Uri> = emptySet(),
 
+    // ── Estado de ubicaciones ───────────────────────────────────────────────
+    val availableStates: List<String> = emptyList(),
+    val availableMunicipalities: List<String> = emptyList(),
+
     // ── Estado global ───────────────────────────────────────────────────────
     val currentStep: Int = 1,
     val isLoading: Boolean = false,
