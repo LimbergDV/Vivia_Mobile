@@ -6,8 +6,10 @@ import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.limbergdv.vivia_mobile.core.database.converters.PropertyConverters
+import com.limbergdv.vivia_mobile.core.database.dao.PendingImageDao
 import com.limbergdv.vivia_mobile.core.database.dao.PropertyDao
 import com.limbergdv.vivia_mobile.core.database.dao.PropertyDraftDao
+import com.limbergdv.vivia_mobile.core.database.entities.PendingImageEntity
 import com.limbergdv.vivia_mobile.core.database.entities.PropertyDraftEntity
 import com.limbergdv.vivia_mobile.core.database.entities.PropertyEntity
 
@@ -15,8 +17,9 @@ import com.limbergdv.vivia_mobile.core.database.entities.PropertyEntity
     entities = [
         PropertyDraftEntity::class,
         PropertyEntity::class,
+        PendingImageEntity::class
     ],
-    version = 3,         // ← subimos a 3
+    version = 4,         // ← subimos a 4
     exportSchema = false
 )
 @TypeConverters(PropertyConverters::class)
@@ -24,6 +27,7 @@ abstract class AppDatabase : RoomDatabase() {
 
     abstract fun propertyDraftDao(): PropertyDraftDao
     abstract fun propertyDao(): PropertyDao
+    abstract fun pendingImageDao(): PendingImageDao
 
     companion object {
 
@@ -106,6 +110,21 @@ abstract class AppDatabase : RoomDatabase() {
 
                 // 4. Eliminar tabla vieja
                 database.execSQL("DROP TABLE properties_old")
+            }
+        }
+
+        val MIGRATION_3_4 = object : Migration(3, 4) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL(
+                    """
+                    CREATE TABLE IF NOT EXISTS `pending_images` (
+                        `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, 
+                        `propertyId` TEXT NOT NULL, 
+                        `imageUri` TEXT NOT NULL, 
+                        `createdAt` INTEGER NOT NULL
+                    )
+                    """.trimIndent()
+                )
             }
         }
     }

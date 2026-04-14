@@ -1,13 +1,17 @@
 package com.limbergdv.vivia_mobile.features.properties.local.presentation.viewmodels
 
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.limbergdv.vivia_mobile.core.hardware.domain.CameraManager
 import com.limbergdv.vivia_mobile.core.network.MexicoLocationManager
-import com.limbergdv.vivia_mobile.features.properties.local.domain.entities.*
+import com.limbergdv.vivia_mobile.features.properties.local.domain.entities.ListingType
+import com.limbergdv.vivia_mobile.features.properties.local.domain.entities.Property
+import com.limbergdv.vivia_mobile.features.properties.local.domain.entities.PropertyType
 import com.limbergdv.vivia_mobile.features.properties.local.domain.usecases.AddPropertyUseCases
 import com.limbergdv.vivia_mobile.features.properties.local.presentation.screens.AddPropertyUiState
+import com.limbergdv.vivia_mobile.features.properties.remote.domain.usecases.EnqueueImageUploadUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -21,7 +25,8 @@ import javax.inject.Inject
 class AddPropertyViewModel @Inject constructor(
     private val useCases: AddPropertyUseCases,
     private val cameraManager: CameraManager,
-    private val locationManager: MexicoLocationManager
+    private val locationManager: MexicoLocationManager,
+    private val enqueueImageUploadUseCase: EnqueueImageUploadUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AddPropertyUiState())
@@ -205,18 +210,18 @@ class AddPropertyViewModel @Inject constructor(
         val state = _uiState.value
 
         // Log para ver el estado completo antes de enviar
-        android.util.Log.d("VIVIA_PROPERTY_DEBUG", "=== UiState al hacer submit ===")
-        android.util.Log.d("VIVIA_PROPERTY_DEBUG", "city: '${state.city}'")
-        android.util.Log.d("VIVIA_PROPERTY_DEBUG", "state: '${state.state}'")
-        android.util.Log.d("VIVIA_PROPERTY_DEBUG", "neighborhood: '${state.neighborhood}'")
-        android.util.Log.d("VIVIA_PROPERTY_DEBUG", "price: '${state.price}'")
-        android.util.Log.d("VIVIA_PROPERTY_DEBUG", "landArea: '${state.landArea}'")
-        android.util.Log.d("VIVIA_PROPERTY_DEBUG", "title: '${state.title}'")
-        android.util.Log.d("VIVIA_PROPERTY_DEBUG", "description: '${state.description}'")
-        android.util.Log.d("VIVIA_PROPERTY_DEBUG", "bedrooms: ${state.bedrooms}")
-        android.util.Log.d("VIVIA_PROPERTY_DEBUG", "bathrooms: ${state.bathrooms}")
-        android.util.Log.d("VIVIA_PROPERTY_DEBUG", "parkingSpaces: ${state.parkingSpaces}")
-        android.util.Log.d("VIVIA_PROPERTY_DEBUG", "currentStep: ${state.currentStep}")
+        Log.d("VIVIA_PROPERTY_DEBUG", "=== UiState al hacer submit ===")
+        Log.d("VIVIA_PROPERTY_DEBUG", "city: '${state.city}'")
+        Log.d("VIVIA_PROPERTY_DEBUG", "state: '${state.state}'")
+        Log.d("VIVIA_PROPERTY_DEBUG", "neighborhood: '${state.neighborhood}'")
+        Log.d("VIVIA_PROPERTY_DEBUG", "price: '${state.price}'")
+        Log.d("VIVIA_PROPERTY_DEBUG", "landArea: '${state.landArea}'")
+        Log.d("VIVIA_PROPERTY_DEBUG", "title: '${state.title}'")
+        Log.d("VIVIA_PROPERTY_DEBUG", "description: '${state.description}'")
+        Log.d("VIVIA_PROPERTY_DEBUG", "bedrooms: ${state.bedrooms}")
+        Log.d("VIVIA_PROPERTY_DEBUG", "bathrooms: ${state.bathrooms}")
+        Log.d("VIVIA_PROPERTY_DEBUG", "parkingSpaces: ${state.parkingSpaces}")
+        Log.d("VIVIA_PROPERTY_DEBUG", "currentStep: ${state.currentStep}")
 
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
@@ -240,7 +245,11 @@ class AddPropertyViewModel @Inject constructor(
                 val result = useCases.createProperty(property)
 
                 result.fold(
-                    onSuccess = {
+                    onSuccess = { createdProperty ->
+                        // Encolar subida de imágenes en segundo plano
+                        if (state.selectedImages.isNotEmpty()) {
+                            enqueueImageUploadUseCase(createdProperty.id, state.selectedImages)
+                        }
                         useCases.clearDraft()
                         _uiState.update { it.copy(isLoading = false, isSuccess = true) }
                     },

@@ -3,8 +3,9 @@ package com.limbergdv.vivia_mobile.core.di
 import android.content.Context
 import androidx.room.Room
 import com.limbergdv.vivia_mobile.core.database.AppDatabase
-import com.limbergdv.vivia_mobile.core.database.dao.PropertyDraftDao
+import com.limbergdv.vivia_mobile.core.database.dao.PendingImageDao
 import com.limbergdv.vivia_mobile.core.database.dao.PropertyDao
+import com.limbergdv.vivia_mobile.core.database.dao.PropertyDraftDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -26,7 +27,8 @@ object DatabaseModule {
         )
             .addMigrations(
                 AppDatabase.MIGRATION_1_2,
-                AppDatabase.MIGRATION_2_3
+                AppDatabase.MIGRATION_2_3,
+                AppDatabase.MIGRATION_3_4
             )
             .build()
     }
@@ -36,4 +38,7 @@ object DatabaseModule {
 
     @Provides
     fun providePropertyDao(db: AppDatabase): PropertyDao = db.propertyDao()
+
+    @Provides
+    fun providePendingImageDao(db: AppDatabase): PendingImageDao = db.pendingImageDao()
 }
