@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.limbergdv.vivia_mobile.features.properties.remote.domain.usecases.DeletePropertyUseCase
 import com.limbergdv.vivia_mobile.features.properties.remote.domain.usecases.GetPropertyDetailsUseCase
+import com.limbergdv.vivia_mobile.features.properties.remote.domain.usecases.GetPublicPropertyDetailsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,6 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 class PropertyDetailsViewModel @Inject constructor(
     private val getPropertyDetailsUseCase: GetPropertyDetailsUseCase,
+    private val getPublicPropertyDetailsUseCase: GetPublicPropertyDetailsUseCase,
     private val deletePropertyUseCase: DeletePropertyUseCase,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
@@ -27,8 +29,15 @@ class PropertyDetailsViewModel @Inject constructor(
 
     init {
         val propertyId: String? = savedStateHandle["propertyId"]
+        val isLessor: Boolean = savedStateHandle["isLessor"] ?: true
+        _uiState.update { it.copy(isLessorMode = isLessor) }
+
         if (propertyId != null) {
-            observePropertyDetails(propertyId)
+            if (isLessor) {
+                observePropertyDetails(propertyId)
+            } else {
+                fetchPublicPropertyDetails(propertyId)
+            }
         } else {
             _uiState.update { it.copy(isLoading = false) }
         }
@@ -40,6 +49,21 @@ class PropertyDetailsViewModel @Inject constructor(
                 _uiState.update { it.copy(property = property, isLoading = false) }
             }
             .launchIn(viewModelScope)
+    }
+
+    private fun fetchPublicPropertyDetails(id: String) {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true, error = null) }
+            val result = getPublicPropertyDetailsUseCase(id)
+            result.fold(
+                onSuccess = { property ->
+                    _uiState.update { it.copy(property = property, isLoading = false) }
+                },
+                onFailure = { e ->
+                    _uiState.update { it.copy(isLoading = false, error = e.message) }
+                }
+            )
+        }
     }
 
     fun deleteProperty() {

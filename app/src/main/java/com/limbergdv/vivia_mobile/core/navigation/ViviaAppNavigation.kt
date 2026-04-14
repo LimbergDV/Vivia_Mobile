@@ -2,9 +2,11 @@ package com.limbergdv.vivia_mobile.core.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.limbergdv.vivia_mobile.core.session.TokenDataStore
 import com.limbergdv.vivia_mobile.features.auth.presentation.screens.LoginLesseeScreen
@@ -134,7 +136,7 @@ fun ViviaAppNavigation(
                 MyPropertiesScreen(
                     onNavigate = { destination -> appNavigator.navigate(destination) },
                     onPropertyClick = { propertyId ->
-                        appNavigator.navigate("property_details/$propertyId")
+                        appNavigator.navigate("property_details/$propertyId?isLessor=true")
                     },
                     onAddPropertyClick = {
                         appNavigator.navigate(AppRoutes.ADD_PROPERTY)
@@ -185,12 +187,19 @@ fun ViviaAppNavigation(
                 )
             }
 
-            composable("property_details/{propertyId}") { backStackEntry ->
+            composable(
+                route = "property_details/{propertyId}?isLessor={isLessor}",
+                arguments = listOf(
+                    navArgument("propertyId") { type = NavType.StringType },
+                    navArgument("isLessor") { 
+                        type = NavType.BoolType
+                        defaultValue = true 
+                    }
+                )
+            ) { backStackEntry ->
                 PropertyDetailScreen(
                     onBack = {
-                        appNavigator.navigate(AppRoutes.MY_PROPERTIES) {
-                            popUpTo(AppRoutes.MY_PROPERTIES) { inclusive = true }
-                        }
+                        appNavigator.popBackStack()
                     }
                 )
             }

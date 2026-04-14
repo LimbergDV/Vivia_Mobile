@@ -94,7 +94,10 @@ fun LesseeSearchScreen(
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     items(state.filteredProperties, key = { it.id }) { property ->
-                        PropertyItem(property = property, onClick = {})
+                        PropertyItem(
+                            property = property,
+                            onClick = { onNavigate("property_details/${property.id}?isLessor=false") }
+                        )
                     }
                 }
             }

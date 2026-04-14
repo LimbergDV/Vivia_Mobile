@@ -15,5 +15,6 @@ data class Property(
     val bathroomsNumber: Int,
     val parkingNumber: Int,
     val lessorId: String,
-    val imageUrls: List<String>
+    val imageUrls: List<String>,
+    val lessor: Lessor? = null
 )

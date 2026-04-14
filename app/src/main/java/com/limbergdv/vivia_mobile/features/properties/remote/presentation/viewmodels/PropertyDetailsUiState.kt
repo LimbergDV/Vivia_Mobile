@@ -7,5 +7,6 @@ data class PropertyDetailsUiState(
     val isLoading: Boolean = true,
     val isDeleting: Boolean = false,
     val isDeleted: Boolean = false,
+    val isLessorMode: Boolean = true,
     val error: String? = null
 )
