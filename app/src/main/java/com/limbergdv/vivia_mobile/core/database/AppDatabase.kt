@@ -8,15 +8,18 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import com.limbergdv.vivia_mobile.core.database.converters.PropertyConverters
 import com.limbergdv.vivia_mobile.core.database.dao.PropertyDao
 import com.limbergdv.vivia_mobile.core.database.dao.PropertyDraftDao
+import com.limbergdv.vivia_mobile.core.database.dao.LesseePropertyDao
 import com.limbergdv.vivia_mobile.core.database.entities.PropertyDraftEntity
 import com.limbergdv.vivia_mobile.core.database.entities.PropertyEntity
+import com.limbergdv.vivia_mobile.core.database.entities.LesseePropertyEntity
 
 @Database(
     entities = [
         PropertyDraftEntity::class,
         PropertyEntity::class,
+        LesseePropertyEntity::class,
     ],
-    version = 3,         // ← subimos a 3
+    version = 4,
     exportSchema = false
 )
 @TypeConverters(PropertyConverters::class)
@@ -24,6 +27,7 @@ abstract class AppDatabase : RoomDatabase() {
 
     abstract fun propertyDraftDao(): PropertyDraftDao
     abstract fun propertyDao(): PropertyDao
+    abstract fun lesseePropertyDao(): LesseePropertyDao
 
     companion object {
 
@@ -106,6 +110,34 @@ abstract class AppDatabase : RoomDatabase() {
 
                 // 4. Eliminar tabla vieja
                 database.execSQL("DROP TABLE properties_old")
+            }
+        }
+
+        // version 3 → 4: se agrega tabla tenant_properties para arrendatarios
+        val MIGRATION_3_4 = object : Migration(3, 4) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL(
+                    """
+                    CREATE TABLE IF NOT EXISTS `tenant_properties` (
+                        `id` TEXT NOT NULL,
+                        `title` TEXT NOT NULL,
+                        `description` TEXT NOT NULL,
+                        `price` REAL NOT NULL,
+                        `addr_address` TEXT NOT NULL DEFAULT '',
+                        `addr_city` TEXT NOT NULL DEFAULT '',
+                        `addr_state` TEXT NOT NULL DEFAULT '',
+                        `addr_neighborhood` TEXT NOT NULL DEFAULT '',
+                        `departmentType` TEXT NOT NULL,
+                        `area` REAL NOT NULL,
+                        `roomsNumber` INTEGER NOT NULL,
+                        `bathroomsNumber` INTEGER NOT NULL,
+                        `parkingNumber` INTEGER NOT NULL,
+                        `lessorId` TEXT NOT NULL,
+                        `imageUrls` TEXT NOT NULL,
+                        PRIMARY KEY(`id`)
+                    )
+                    """.trimIndent()
+                )
             }
         }
     }
