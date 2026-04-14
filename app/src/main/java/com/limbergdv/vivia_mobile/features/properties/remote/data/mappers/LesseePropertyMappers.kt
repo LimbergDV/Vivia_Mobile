@@ -6,23 +6,23 @@ import com.limbergdv.vivia_mobile.features.properties.remote.data.datasources.re
 import com.limbergdv.vivia_mobile.features.properties.remote.domain.entities.Property
 
 fun PropertyResponseDto.toLesseeEntity(): LesseePropertyEntity = LesseePropertyEntity(
-    id = id,
-    title = title,
-    description = description,
-    price = price,
+    id = id ?: "",
+    title = title ?: "Sin título",
+    description = description ?: "",
+    price = price ?: 0.0,
     address = AddressEntity(
-        address = address.address,
-        city = address.city,
-        state = address.state,
-        neighborhood = address.neighborhood
+        address = address?.address ?: "",
+        city = address?.city ?: "",
+        state = address?.state ?: "",
+        neighborhood = address?.neighborhood ?: ""
     ),
-    departmentType = departmentType,
-    area = area,
-    roomsNumber = roomsNumber,
-    bathroomsNumber = bathroomsNumber,
-    parkingNumber = parkingNumber,
-    lessorId = lessorId,
-    imageUrls = imageUrls
+    departmentType = departmentType ?: "",
+    area = area ?: 0.0,
+    roomsNumber = roomsNumber ?: 0,
+    bathroomsNumber = bathroomsNumber ?: 0,
+    parkingNumber = parkingNumber ?: 0,
+    lessorId = lessorId ?: "",
+    imageUrls = imageUrls ?: emptyList()
 )
 
 fun LesseePropertyEntity.toDomain(): Property = Property(

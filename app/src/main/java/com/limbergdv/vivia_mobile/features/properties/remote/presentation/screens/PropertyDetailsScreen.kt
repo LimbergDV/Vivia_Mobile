@@ -1,5 +1,7 @@
 package com.limbergdv.vivia_mobile.features.properties.remote.presentation.screens
 
+import android.content.Intent
+import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -10,8 +12,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.Chat
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -25,9 +29,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
+import com.limbergdv.vivia_mobile.features.properties.remote.domain.entities.Lessor
 import com.limbergdv.vivia_mobile.features.properties.remote.domain.entities.Property
 import com.limbergdv.vivia_mobile.features.properties.remote.presentation.viewmodels.PropertyDetailsViewModel
 
@@ -96,11 +101,24 @@ fun PropertyDetailScreen(
                     PropertyImageCarousel(
                         imageUrls = property.imageUrls,
                         onBack = onBack,
-                        onDeleteClick = { showDeleteDialog = true }
+                        onDeleteClick = { showDeleteDialog = true },
+                        showDeleteButton = uiState.isLessorMode
                     )
                     PropertyInfo(
                         property = property
                     )
+                    
+                    val lessor = property.lessor
+                    if (!uiState.isLessorMode && lessor != null) {
+                        LessorInfoSection(
+                            lessor = lessor,
+                            onWhatsAppClick = {
+                                val url = "https://api.whatsapp.com/send?phone=${lessor.phoneNumber}"
+                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                                context.startActivity(intent)
+                            }
+                        )
+                    }
                 }
                 
                 if (uiState.isDeleting) {
@@ -128,7 +146,8 @@ fun PropertyDetailScreen(
 fun PropertyImageCarousel(
     imageUrls: List<String>,
     onBack: () -> Unit,
-    onDeleteClick: () -> Unit
+    onDeleteClick: () -> Unit,
+    showDeleteButton: Boolean = true
 ) {
     Box(
         modifier = Modifier
@@ -196,7 +215,7 @@ fun PropertyImageCarousel(
         ) {
             IconButton(onClick = onBack) {
                 Icon(
-                    imageVector = Icons.Default.ArrowBack,
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "Atrás",
                     tint = Color.White
                 )
@@ -204,21 +223,23 @@ fun PropertyImageCarousel(
         }
 
         // Botón eliminar
-        Box(
-            modifier = Modifier
-                .padding(16.dp)
-                .size(40.dp)
-                .clip(CircleShape)
-                .background(Color.Black.copy(alpha = 0.4f))
-                .align(Alignment.TopEnd),
-            contentAlignment = Alignment.Center
-        ) {
-            IconButton(onClick = onDeleteClick) {
-                Icon(
-                    imageVector = Icons.Default.Delete,
-                    contentDescription = "Eliminar",
-                    tint = Color.White
-                )
+        if (showDeleteButton) {
+            Box(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .size(40.dp)
+                    .clip(CircleShape)
+                    .background(Color.Black.copy(alpha = 0.4f))
+                    .align(Alignment.TopEnd),
+                contentAlignment = Alignment.Center
+            ) {
+                IconButton(onClick = onDeleteClick) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = "Eliminar",
+                        tint = Color.White
+                    )
+                }
             }
         }
     }
@@ -289,6 +310,60 @@ fun PropertyInfo(property: Property) {
             color = Color.DarkGray,
             lineHeight = 24.sp
         )
+    }
+}
+
+@Composable
+fun LessorInfoSection(
+    lessor: Lessor,
+    onWhatsAppClick: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(20.dp)
+            .background(Color(0xFFF8FAFC), RoundedCornerShape(16.dp))
+            .padding(16.dp)
+    ) {
+        Text(
+            text = "Información del Arrendador",
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color(0xFF0D3B4F)
+        )
+        Spacer(modifier = Modifier.height(12.dp))
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Box(
+                modifier = Modifier
+                    .size(48.dp)
+                    .background(Color(0xFFEEF2F7), CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(Icons.Default.Person, null, tint = Color(0xFF0D3B4F))
+            }
+            Spacer(modifier = Modifier.width(12.dp))
+            Column {
+                Text(
+                    text = "${lessor.firstName} ${lessor.lastName}",
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 16.sp
+                )
+                if (!lessor.companyName.isNullOrBlank()) {
+                    Text(text = lessor.companyName, fontSize = 14.sp, color = Color.Gray)
+                }
+            }
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+        Button(
+            onClick = onWhatsAppClick,
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF25D366)),
+            shape = RoundedCornerShape(12.dp)
+        ) {
+            Icon(Icons.AutoMirrored.Filled.Chat, null, tint = Color.White)
+            Spacer(modifier = Modifier.width(8.dp))
+            Text("Contactar por WhatsApp", fontWeight = FontWeight.Bold)
+        }
     }
 }
 

@@ -44,7 +44,7 @@ class MyPropertiesRepositoryImpl @Inject constructor(
 
                 dtos.forEachIndexed { index, property ->
                     Log.d("SyncProperties", "Propiedad [$index]: ID=${property.id}, Title=${property.title}")
-                    Log.d("SyncProperties", "Images [${property.imageUrls.size}]: ${property.imageUrls}")
+                    Log.d("SyncProperties", "Images [${property.imageUrls?.size ?: 0}]: ${property.imageUrls}")
                 }
 
                 val entities = dtos.map { it.toEntity() }
