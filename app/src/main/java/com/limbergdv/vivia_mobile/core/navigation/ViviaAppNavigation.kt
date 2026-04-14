@@ -167,7 +167,9 @@ fun ViviaAppNavigation(
             composable("property_details/{propertyId}") { backStackEntry ->
                 PropertyDetailScreen(
                     onBack = {
-                        appNavigator.popBackStack()
+                        appNavigator.navigate(AppRoutes.MY_PROPERTIES) {
+                            popUpTo(AppRoutes.MY_PROPERTIES) { inclusive = true }
+                        }
                     }
                 )
             }

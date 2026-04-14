@@ -16,8 +16,11 @@ interface PropertyDao {
     suspend fun insertAll(properties: List<PropertyEntity>)
 
     @Query("SELECT * FROM properties WHERE id = :id")
-    fun observeById(id: String): Flow<PropertyEntity>
+    fun observeById(id: String): Flow<PropertyEntity?>
 
     @Query("DELETE FROM properties")
     suspend fun deleteAll()
+
+    @Query("DELETE FROM properties WHERE id = :id")
+    suspend fun deleteById(id: String)
 }

@@ -8,7 +8,7 @@ import javax.inject.Inject
 class GetPropertyDetailsUseCase @Inject constructor(
     private val repository: MyPropertiesRepository
 ) {
-    operator fun invoke(id: String): Flow<Property> {
+    operator fun invoke(id: String): Flow<Property?> {
         return repository.getPropertyById(id)
     }
 }
