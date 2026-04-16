@@ -34,7 +34,7 @@ class LesseePropertiesRepositoryImpl @Inject constructor(
         
         dtos.forEachIndexed { index, property ->
             Log.d("LesseeSync", "Propiedad [$index]: ID=${property.id}, Title=${property.title}")
-            Log.d("LesseeSync", "Images [${property.imageUrls.size}]: ${property.imageUrls}")
+            Log.d("LesseeSync", "Images [${property.imageUrls?.size ?: 0}]: ${property.imageUrls}")
         }
 
         val entities = dtos.map { it.toLesseeEntity() }
@@ -42,6 +42,22 @@ class LesseePropertiesRepositoryImpl @Inject constructor(
         Result.success(Unit)
     } catch (e: Exception) {
         Log.e("LesseeSync", "Error al sincronizar: ${e.message}", e)
+        Result.failure(e)
+    }
+
+    override suspend fun getPropertyById(id: String): Result<Property> = try {
+        val response = api.getPropertyById(id)
+        if (response.isSuccessful) {
+            val wrapper = response.body()
+            if (wrapper?.success == true && wrapper.data != null) {
+                Result.success(wrapper.data.toDomain())
+            } else {
+                Result.failure(Exception(wrapper?.message ?: "Propiedad no encontrada"))
+            }
+        } else {
+            Result.failure(Exception("Error al obtener detalle (HTTP ${response.code()})"))
+        }
+    } catch (e: Exception) {
         Result.failure(e)
     }
 }

@@ -17,6 +17,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.limbergdv.vivia_mobile.core.network.dtos.MexicoState
 import com.limbergdv.vivia_mobile.features.properties.remote.domain.entities.SearchFilter
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -25,6 +26,7 @@ fun LesseeSearchFilterSheet(
     filter: SearchFilter,
     availableTypes: List<String>,
     maxPriceInData: Double,
+    mexicoLocations: List<MexicoState>,
     onApply: (SearchFilter) -> Unit,
     onDismiss: () -> Unit
 ) {
@@ -35,6 +37,12 @@ fun LesseeSearchFilterSheet(
         val hi = if (local.maxPrice == Double.MAX_VALUE) safeMax else local.maxPrice.toFloat().coerceIn(0f, safeMax)
         mutableStateOf(lo..hi)
     }
+
+    var stateExpanded by remember { mutableStateOf(false) }
+    var cityExpanded by remember { mutableStateOf(false) }
+
+    val selectedState = mexicoLocations.find { it.state == local.state }
+    val municipalities = selectedState?.municipalities ?: emptyList()
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -88,23 +96,93 @@ fun LesseeSearchFilterSheet(
 
             FilterSectionTitle("Ubicación")
             Spacer(Modifier.height(8.dp))
-            OutlinedTextField(
-                value = local.city,
-                onValueChange = { local = local.copy(city = it) },
-                label = { Text("Ciudad") },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                shape = RoundedCornerShape(10.dp)
-            )
+
+            // State Selection
+            ExposedDropdownMenuBox(
+                expanded = stateExpanded,
+                onExpandedChange = { stateExpanded = !stateExpanded }
+            ) {
+                OutlinedTextField(
+                    value = local.state,
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text("Estado") },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = stateExpanded) },
+                    modifier = Modifier.menuAnchor().fillMaxWidth(),
+                    shape = RoundedCornerShape(10.dp),
+                    colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(
+                        focusedBorderColor = Color(0xFF0D3B4F),
+                        focusedLabelColor = Color(0xFF0D3B4F)
+                    )
+                )
+                ExposedDropdownMenu(
+                    expanded = stateExpanded,
+                    onDismissRequest = { stateExpanded = false }
+                ) {
+                    DropdownMenuItem(
+                        text = { Text("Todos") },
+                        onClick = {
+                            local = local.copy(state = "", city = "")
+                            stateExpanded = false
+                        }
+                    )
+                    mexicoLocations.forEach { mexicoState ->
+                        DropdownMenuItem(
+                            text = { Text(mexicoState.state) },
+                            onClick = {
+                                local = local.copy(state = mexicoState.state, city = "")
+                                stateExpanded = false
+                            }
+                        )
+                    }
+                }
+            }
+
             Spacer(Modifier.height(8.dp))
-            OutlinedTextField(
-                value = local.state,
-                onValueChange = { local = local.copy(state = it) },
-                label = { Text("Estado") },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                shape = RoundedCornerShape(10.dp)
-            )
+
+            // City Selection
+            ExposedDropdownMenuBox(
+                expanded = cityExpanded,
+                onExpandedChange = { if (local.state.isNotEmpty()) cityExpanded = !cityExpanded }
+            ) {
+                OutlinedTextField(
+                    value = local.city,
+                    onValueChange = {},
+                    readOnly = true,
+                    enabled = local.state.isNotEmpty(),
+                    label = { Text("Ciudad") },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = cityExpanded) },
+                    modifier = Modifier.menuAnchor().fillMaxWidth(),
+                    shape = RoundedCornerShape(10.dp),
+                    colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(
+                        focusedBorderColor = Color(0xFF0D3B4F),
+                        focusedLabelColor = Color(0xFF0D3B4F)
+                    )
+                )
+                if (municipalities.isNotEmpty()) {
+                    ExposedDropdownMenu(
+                        expanded = cityExpanded,
+                        onDismissRequest = { cityExpanded = false }
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text("Todas") },
+                            onClick = {
+                                local = local.copy(city = "")
+                                cityExpanded = false
+                            }
+                        )
+                        municipalities.forEach { city ->
+                            DropdownMenuItem(
+                                text = { Text(city) },
+                                onClick = {
+                                    local = local.copy(city = city)
+                                    cityExpanded = false
+                                }
+                            )
+                        }
+                    }
+                }
+            }
             Spacer(Modifier.height(16.dp))
 
             val minDisplay = "$${"%,.0f".format(priceRange.start)}"

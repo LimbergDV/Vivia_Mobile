@@ -78,7 +78,8 @@ fun LesseePropertiesScreen(
                 LesseePropertiesHeader()
                 LesseePropertiesContent(
                     properties = uiState.properties,
-                    isSyncing = uiState.isSyncing
+                    isSyncing = uiState.isSyncing,
+                    onNavigate = onNavigate
                 )
             }
         }
@@ -106,7 +107,8 @@ private fun LesseePropertiesHeader() {
 @Composable
 private fun LesseePropertiesContent(
     properties: List<Property>,
-    isSyncing: Boolean
+    isSyncing: Boolean,
+    onNavigate: (String) -> Unit
 ) {
     if (properties.isEmpty() && !isSyncing) {
         LesseeEmptyState()
@@ -117,7 +119,10 @@ private fun LesseePropertiesContent(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             items(properties, key = { it.id }) { property ->
-                PropertyItem(property = property, onClick = {})
+                PropertyItem(
+                    property = property,
+                    onClick = { onNavigate("property_details/${property.id}?isLessor=false") }
+                )
             }
         }
     }

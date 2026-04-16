@@ -6,4 +6,5 @@ import kotlinx.coroutines.flow.Flow
 interface LesseePropertiesRepository {
     fun observeProperties(): Flow<List<Property>>
     suspend fun sync(): Result<Unit>
+    suspend fun getPropertyById(id: String): Result<Property>
 }

@@ -2,6 +2,7 @@ package com.limbergdv.vivia_mobile.features.properties.remote.presentation.viewm
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.limbergdv.vivia_mobile.core.network.MexicoLocationManager
 import com.limbergdv.vivia_mobile.features.properties.remote.domain.entities.Property
 import com.limbergdv.vivia_mobile.features.properties.remote.domain.entities.SearchFilter
 import com.limbergdv.vivia_mobile.features.properties.remote.domain.usecases.ObserveLesseePropertiesUseCase
@@ -15,7 +16,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LesseeSearchViewModel @Inject constructor(
-    private val observeUseCase: ObserveLesseePropertiesUseCase
+    private val observeUseCase: ObserveLesseePropertiesUseCase,
+    private val locationManager: MexicoLocationManager
 ) : ViewModel() {
 
     private val _filter = MutableStateFlow(SearchFilter())
@@ -23,6 +25,7 @@ class LesseeSearchViewModel @Inject constructor(
     val state: StateFlow<LesseeSearchState> = _state.asStateFlow()
 
     init {
+        val locations = locationManager.getMexicoLocations()
         viewModelScope.launch {
             combine(observeUseCase(), _filter) { all, filter ->
                 val types = all.map { it.departmentType }
@@ -32,7 +35,8 @@ class LesseeSearchViewModel @Inject constructor(
                     filteredProperties = applyFilter(all, filter),
                     filter = filter,
                     availableTypes = types,
-                    maxPriceInData = maxPrice
+                    maxPriceInData = maxPrice,
+                    mexicoLocations = locations
                 )
             }.collect { _state.value = it }
         }
